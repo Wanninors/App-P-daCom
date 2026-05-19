@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App-P-daCom — Exercice de communication interpersonnelle</title>
+<title>App-P-daCom — Exercice de communication PCM</title>
 <style>
   :root {
-    --d: #e63946;   /* Dominant - rouge */
-    --i: #f4a261;   /* Influent - jaune/orange */
-    --s: #2a9d8f;   /* Stable - vert */
-    --c: #4361ee;   /* Consciencieux - bleu */
+    --em: #e91e63;   /* Empathique */
+    --tr: #3f51b5;   /* Travaillomane */
+    --pe: #009688;   /* Persévérant */
+    --rv: #9c27b0;   /* Rêveur */
+    --rb: #ff9800;   /* Rebelle */
+    --pr: #f44336;   /* Promoteur */
     --bg: #0f172a;
     --card: #1e293b;
     --soft: #334155;
@@ -27,12 +29,13 @@
     line-height: 1.6;
   }
   header {
-    background: linear-gradient(135deg, var(--c), var(--s));
+    background: linear-gradient(135deg, var(--tr), var(--rv));
     padding: 2rem 1rem;
     text-align: center;
   }
   header h1 { margin: 0; font-size: 2rem; }
   header p { margin: .5rem 0 0; color: rgba(255,255,255,.85); }
+  header .sub { font-size: .85rem; margin-top: .3rem; opacity: .75; }
   nav {
     display: flex;
     flex-wrap: wrap;
@@ -49,17 +52,15 @@
     background: var(--soft);
     color: var(--text);
     border: none;
-    padding: .6rem 1.2rem;
+    padding: .6rem 1.1rem;
     border-radius: 8px;
     cursor: pointer;
-    font-size: .95rem;
+    font-size: .9rem;
     font-weight: 600;
     transition: all .2s;
   }
   nav button:hover { background: #475569; }
-  nav button.active {
-    background: linear-gradient(135deg, var(--c), var(--s));
-  }
+  nav button.active { background: linear-gradient(135deg, var(--tr), var(--rv)); }
   .score {
     margin-left: auto;
     padding: .6rem 1rem;
@@ -68,7 +69,7 @@
     font-size: .9rem;
   }
   main {
-    max-width: 980px;
+    max-width: 1000px;
     margin: 2rem auto;
     padding: 0 1rem;
   }
@@ -93,24 +94,29 @@
     transition: transform .2s;
   }
   .profile-card:hover { transform: translateY(-4px); }
-  .profile-card.D { border-top-color: var(--d); }
-  .profile-card.I { border-top-color: var(--i); }
-  .profile-card.S { border-top-color: var(--s); }
-  .profile-card.C { border-top-color: var(--c); }
+  .profile-card.em { border-top-color: var(--em); }
+  .profile-card.tr { border-top-color: var(--tr); }
+  .profile-card.pe { border-top-color: var(--pe); }
+  .profile-card.rv { border-top-color: var(--rv); }
+  .profile-card.rb { border-top-color: var(--rb); }
+  .profile-card.pr { border-top-color: var(--pr); }
   .profile-card h3 { margin: 0 0 .5rem; font-size: 1.3rem; }
   .badge {
     display: inline-block;
     padding: .2rem .6rem;
     border-radius: 4px;
-    font-size: .8rem;
+    font-size: .75rem;
     font-weight: 700;
-    color: #0f172a;
+    color: white;
     margin-bottom: .8rem;
+    letter-spacing: .05em;
   }
-  .badge.D { background: var(--d); color: white; }
-  .badge.I { background: var(--i); }
-  .badge.S { background: var(--s); color: white; }
-  .badge.C { background: var(--c); color: white; }
+  .badge.em { background: var(--em); }
+  .badge.tr { background: var(--tr); }
+  .badge.pe { background: var(--pe); }
+  .badge.rv { background: var(--rv); }
+  .badge.rb { background: var(--rb); color: #0f172a; }
+  .badge.pr { background: var(--pr); }
   details {
     background: var(--card);
     border-radius: 12px;
@@ -135,11 +141,11 @@
     margin-top: 1.5rem;
   }
   .scenario-text {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-style: italic;
     padding: 1rem;
     background: var(--soft);
-    border-left: 4px solid var(--c);
+    border-left: 4px solid var(--tr);
     border-radius: 4px;
     margin-bottom: 1.5rem;
   }
@@ -156,7 +162,7 @@
     transition: all .2s;
   }
   .options button:hover:not(:disabled) {
-    border-color: var(--c);
+    border-color: var(--tr);
     background: #475569;
   }
   .options button.correct {
@@ -172,14 +178,14 @@
     padding: 1rem;
     border-radius: 8px;
     background: var(--soft);
-    border-left: 4px solid var(--c);
+    border-left: 4px solid var(--tr);
   }
   .feedback.ok { border-left-color: var(--ok); }
   .feedback.ko { border-left-color: var(--ko); }
   .feedback strong { display: block; margin-bottom: .4rem; }
   .actions { display: flex; gap: .8rem; margin-top: 1.5rem; flex-wrap: wrap; }
   .actions button {
-    background: linear-gradient(135deg, var(--c), var(--s));
+    background: linear-gradient(135deg, var(--tr), var(--rv));
     color: white;
     border: none;
     padding: .7rem 1.4rem;
@@ -199,7 +205,7 @@
   }
   .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--c), var(--s));
+    background: linear-gradient(90deg, var(--tr), var(--rv));
     transition: width .3s;
   }
   .signal-tag {
@@ -220,14 +226,49 @@
     margin-bottom: 1rem;
   }
   .intro p { color: var(--text); }
+  .stress-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .8rem;
+    margin-top: 1rem;
+  }
+  .stress-cell {
+    background: var(--soft);
+    padding: 1rem;
+    border-radius: 8px;
+    border-top: 3px solid;
+  }
+  .stress-cell.deg1 { border-top-color: #fbbf24; }
+  .stress-cell.deg2 { border-top-color: #f97316; }
+  .stress-cell.deg3 { border-top-color: var(--ko); }
+  .stress-cell h5 { margin: 0 0 .4rem; font-size: .85rem; color: var(--muted); text-transform: uppercase; }
+  .pcm-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  .pcm-table th, .pcm-table td {
+    padding: .8rem;
+    text-align: left;
+    border-bottom: 1px solid var(--soft);
+  }
+  .pcm-table th { background: var(--soft); color: var(--muted); text-transform: uppercase; font-size: .8rem; letter-spacing: .05em; }
+  .pcm-table td { color: var(--text); }
   footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .9rem; }
+  @media (max-width: 600px) {
+    .traits { grid-template-columns: 1fr; }
+    .stress-grid { grid-template-columns: 1fr; }
+    nav button { font-size: .8rem; padding: .5rem .8rem; }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>App-P-daCom</h1>
-  <p>Apprendre à reconnaître les personnalités et adapter sa communication</p>
+  <h1>App-P-daCom · Jeu PCM</h1>
+  <p>Communication interpersonnelle avec le modèle <strong>Process Communication</strong> (PCM)</p>
+  <div class="sub">6 types · Perception, canal, besoins psychologiques, stress</div>
+  <p style="margin-top:.8rem"><a href="disc.html" style="color:white;background:rgba(0,0,0,.25);padding:.4rem .9rem;border-radius:6px;text-decoration:none;font-size:.85rem">→ Aller au jeu DISC (4 profils, plus simple)</a></p>
 </header>
 
 <nav>
@@ -237,7 +278,7 @@
   <button data-mod="pratiquer">4. Pratiquer</button>
   <button data-mod="monprofil">5. Mon profil</button>
   <button data-mod="conversation">6. Conversation</button>
-  <button data-mod="aller-plus-loin">7. Aller + loin</button>
+  <button data-mod="aller-plus-loin">7. Stress & + loin</button>
   <div class="score">Score : <span id="score">0</span> / <span id="total">0</span></div>
 </nav>
 
@@ -246,30 +287,53 @@
 <!-- MODULE 1 : APPRENDRE -->
 <section class="module active" id="apprendre">
   <div class="intro">
-    <h2>Les 4 grands profils DISC</h2>
-    <p>Le modèle DISC, créé par William Marston, classe les comportements selon deux axes : <strong>orienté tâche ou relation</strong>, et <strong>rythme rapide ou réfléchi</strong>. La majorité des gens combinent 2 profils dominants. Clique sur chaque carte pour découvrir les détails.</p>
+    <h2>Les 6 types PCM</h2>
+    <p>Le modèle Process Communication, créé par Taibi Kahler pour la NASA, identifie 6 types de personnalité présents en chacun de nous (comme un immeuble à 6 étages). Une <strong>Base</strong> (étage 1) reste stable toute la vie : c'est ta façon naturelle de percevoir le monde. Une <strong>Phase</strong> (étage actuel) peut changer après un événement marquant.</p>
+    <p>Pour chaque type, retiens trois choses : sa <strong>perception</strong> (par quel filtre il lit la réalité), son <strong>canal de communication</strong> préféré, et ses <strong>besoins psychologiques</strong> qui doivent être nourris pour rester en bonne forme.</p>
   </div>
 
   <div class="grid">
-    <div class="profile-card D" data-profile="D">
-      <span class="badge D">D</span>
-      <h3>Dominant</h3>
-      <p><strong>Rouge</strong> · Direct, décidé, orienté résultat. Veut gagner du temps et atteindre l'objectif.</p>
+    <div class="profile-card em" data-profile="em">
+      <span class="badge em">EMPATHIQUE</span>
+      <h3>Le Bienveillant</h3>
+      <p><strong>Perception :</strong> les émotions, les sentiments<br>
+      <strong>Canal :</strong> Nourricier (chaleur)<br>
+      <strong>Besoin :</strong> être reconnu en tant que personne</p>
     </div>
-    <div class="profile-card I" data-profile="I">
-      <span class="badge I">I</span>
-      <h3>Influent</h3>
-      <p><strong>Jaune</strong> · Enthousiaste, sociable, expressif. Aime convaincre et partager des idées.</p>
+    <div class="profile-card tr" data-profile="tr">
+      <span class="badge tr">TRAVAILLOMANE</span>
+      <h3>Le Penseur</h3>
+      <p><strong>Perception :</strong> les pensées, les faits, la logique<br>
+      <strong>Canal :</strong> Interrogatif (questions logiques)<br>
+      <strong>Besoin :</strong> reconnaissance du travail accompli</p>
     </div>
-    <div class="profile-card S" data-profile="S">
-      <span class="badge S">S</span>
-      <h3>Stable</h3>
-      <p><strong>Vert</strong> · Calme, patient, fiable. Cherche la sécurité et l'harmonie.</p>
+    <div class="profile-card pe" data-profile="pe">
+      <span class="badge pe">PERSÉVÉRANT</span>
+      <h3>Le Convaincu</h3>
+      <p><strong>Perception :</strong> les opinions, les valeurs<br>
+      <strong>Canal :</strong> Interrogatif (sur les opinions)<br>
+      <strong>Besoin :</strong> reconnaissance des convictions</p>
     </div>
-    <div class="profile-card C" data-profile="C">
-      <span class="badge C">C</span>
-      <h3>Consciencieux</h3>
-      <p><strong>Bleu</strong> · Précis, analytique, méthodique. Veut comprendre et vérifier.</p>
+    <div class="profile-card rv" data-profile="rv">
+      <span class="badge rv">RÊVEUR</span>
+      <h3>L'Imagineur</h3>
+      <p><strong>Perception :</strong> l'imagination, la réflexion intérieure<br>
+      <strong>Canal :</strong> Directif bienveillant<br>
+      <strong>Besoin :</strong> solitude, espace, temps</p>
+    </div>
+    <div class="profile-card rb" data-profile="rb">
+      <span class="badge rb">REBELLE</span>
+      <h3>L'Énergique</h3>
+      <p><strong>Perception :</strong> les réactions (j'aime / j'aime pas)<br>
+      <strong>Canal :</strong> Émotif / ludique<br>
+      <strong>Besoin :</strong> contacts ludiques, jeu, fun</p>
+    </div>
+    <div class="profile-card pr" data-profile="pr">
+      <span class="badge pr">PROMOTEUR</span>
+      <h3>Le Fonceur</h3>
+      <p><strong>Perception :</strong> les actions<br>
+      <strong>Canal :</strong> Directif (clair, orienté action)<br>
+      <strong>Besoin :</strong> excitation, intensité, défi</p>
     </div>
   </div>
 
@@ -279,8 +343,8 @@
 <!-- MODULE 2 : RECONNAITRE -->
 <section class="module" id="reconnaitre">
   <div class="intro">
-    <h2>Reconnaître le profil</h2>
-    <p>Lis la situation et choisis le profil DISC qui correspond le mieux. Repère les <strong>signaux</strong> : vocabulaire, rythme, posture, valeurs.</p>
+    <h2>Reconnaître le type PCM</h2>
+    <p>Repère trois indices : <strong>les mots qu'il utilise</strong> (perception), <strong>le ton et le rythme</strong> (canal préféré), <strong>ce qu'il valorise</strong> (besoin psychologique). Choisis le type le plus probable.</p>
   </div>
   <div class="progress"><div class="progress-bar" id="rec-progress" style="width:0%"></div></div>
   <div class="scenario" id="rec-card"></div>
@@ -289,8 +353,8 @@
 <!-- MODULE 3 : INTRODUIRE -->
 <section class="module" id="introduire">
   <div class="intro">
-    <h2>Introduire un échange</h2>
-    <p>Les premières secondes comptent. Pour chaque profil, quelle phrase d'accroche est la plus efficace ?</p>
+    <h2>Introduire un échange dans le bon canal</h2>
+    <p>Chaque type capte ce qui lui est familier. Une accroche émotive ennuie un Travaillomane, une question logique fait fuir un Rebelle. Choisis l'ouverture qui parle à l'autre.</p>
   </div>
   <div class="progress"><div class="progress-bar" id="int-progress" style="width:0%"></div></div>
   <div class="scenario" id="int-card"></div>
@@ -299,8 +363,8 @@
 <!-- MODULE 4 : PRATIQUER -->
 <section class="module" id="pratiquer">
   <div class="intro">
-    <h2>Pratique : mises en situation</h2>
-    <p>Situations réelles. Tu connais le profil de ton interlocuteur — choisis la réponse la plus adaptée.</p>
+    <h2>Pratique : situations courantes</h2>
+    <p>Tu connais le type de ton interlocuteur. Choisis la réponse qui nourrit son besoin psychologique et passe par son canal préféré.</p>
   </div>
   <div class="progress"><div class="progress-bar" id="pra-progress" style="width:0%"></div></div>
   <div class="scenario" id="pra-card"></div>
@@ -309,18 +373,18 @@
 <!-- MODULE 5 : MON PROFIL -->
 <section class="module" id="monprofil">
   <div class="intro">
-    <h2>Découvre ton profil dominant</h2>
-    <p>12 questions rapides. Choisis l'option qui te ressemble le plus, même si plusieurs te conviennent. À la fin, tu obtiens ton profil dominant + secondaire et tes axes de progression.</p>
+    <h2>Découvre ta Base PCM</h2>
+    <p>18 questions. Choisis l'option qui te ressemble le plus. À la fin, tu obtiens ton type dominant probable + ton « immeuble » (la répartition des 6 types). <em>Indication seulement — un vrai inventaire PCM se fait avec un certifié.</em></p>
   </div>
   <div class="progress"><div class="progress-bar" id="self-progress" style="width:0%"></div></div>
   <div class="scenario" id="self-card"></div>
 </section>
 
-<!-- MODULE 6 : CONVERSATION SIMULEE -->
+<!-- MODULE 6 : CONVERSATION -->
 <section class="module" id="conversation">
   <div class="intro">
     <h2>Conversation simulée</h2>
-    <p>Choisis avec quel profil tu veux t'entraîner. Tu auras un échange de 5 tours. À chaque message, sélectionne ta réponse — ton « niveau de rapport » avec l'interlocuteur évolue selon tes choix.</p>
+    <p>Choisis un type et entraîne-toi à converser en restant dans son canal. Une jauge de « rapport » te dit si tu nourris ou frustres ses besoins.</p>
   </div>
   <div class="scenario" id="chat-card"></div>
 </section>
@@ -328,145 +392,237 @@
 <!-- MODULE 7 : ALLER PLUS LOIN -->
 <section class="module" id="aller-plus-loin">
   <div class="intro">
-    <h2>Au-delà du DISC : Process Com & MBTI</h2>
-    <p>Le DISC est un excellent point d'entrée, mais d'autres modèles vont plus loin. Voici les deux plus utiles à connaître.</p>
+    <h2>Stress, drivers et passerelles</h2>
+    <p>Quand les besoins psychologiques ne sont plus nourris, chaque type entre en stress en passant par trois degrés observables. Reconnaître ces signaux permet de redonner du carburant avant la rupture.</p>
   </div>
 
   <details open>
-    <summary>Process Communication Model (PCM) — 6 types</summary>
-    <p>Créé par Taibi Kahler pour la NASA, le PCM identifie 6 types de personnalité qui coexistent en chacun de nous, avec une « base » dominante et une « phase » qui peut évoluer. Chaque type a un canal de communication préféré et des besoins psychologiques spécifiques.</p>
-    <div id="pcm-grid" class="grid"></div>
+    <summary>Les 3 degrés de stress par type</summary>
+    <div id="stress-section"></div>
   </details>
 
   <details>
-    <summary>MBTI — 16 types via 4 dichotomies</summary>
-    <p>Le MBTI (Myers-Briggs) classe les personnalités sur 4 axes binaires, donnant 16 combinaisons. Très utile pour comprendre comment quelqu'un perçoit le monde et prend ses décisions.</p>
-    <div id="mbti-axes" class="grid"></div>
-    <div id="mbti-types"></div>
+    <summary>Les 5 drivers (messages contraignants)</summary>
+    <p>Le « driver » est le message inconscient qui s'active sous stress léger (1er degré). Le reconnaître permet de ne plus se laisser piéger.</p>
+    <div id="drivers-section"></div>
   </details>
 
   <details>
-    <summary>Tableau comparatif DISC ↔ PCM ↔ MBTI</summary>
-    <p>Aucune équivalence n'est parfaite, mais ces correspondances aident à passer d'un modèle à l'autre.</p>
-    <div id="cross-table"></div>
+    <summary>Passerelles vers DISC et MBTI</summary>
+    <p>Aucune correspondance n'est parfaite, mais ces ponts aident à passer d'un modèle à l'autre. Le PCM est plus dynamique (il intègre la Phase et le stress), le DISC plus rapide à lire, le MBTI plus profond sur les fonctions cognitives.</p>
+    <div id="cross-section"></div>
   </details>
 </section>
 
 </main>
 
-<footer>Construit pour s'entraîner. Le DISC est un outil de lecture, pas une étiquette : chaque personne est unique.</footer>
+<footer>
+  Construit pour s'entraîner. Le PCM est une grille de lecture comportementale, pas une étiquette. Chaque personne est unique et a les 6 types en elle, à des degrés différents.
+</footer>
 
 <script>
-/* ============== DONNÉES ============== */
+/* ============================================================
+   DONNÉES PCM
+   ============================================================ */
 
 const profiles = {
-  D: {
-    name: "Dominant",
-    color: "var(--d)",
-    keywords: ["résultat", "décision", "challenge", "objectif", "rapidité"],
+  em: {
+    code: "em",
+    name: "Empathique",
+    nick: "Le Bienveillant",
+    color: "var(--em)",
+    perception: "Émotions, sentiments",
+    canal: "Nourricier (chaleur, attention bienveillante)",
+    needs: ["Reconnaissance en tant que personne (qui tu es, pas ce que tu fais)", "Besoins sensoriels (esthétique, confort, ambiance)"],
+    forces: ["Compatissant", "Sensible", "Chaleureux", "Harmonisateur"],
+    keywords: ["je sens", "je ressens", "à l'aise", "ensemble", "famille"],
     signals: {
-      verbal: ["phrases courtes", "verbes d'action", "tutoiement rapide", "interrompt", "« va à l'essentiel »"],
-      nonVerbal: ["regard direct", "poignée ferme", "gestes amples", "rythme rapide"],
-      values: ["efficacité", "autonomie", "contrôle", "gagner"],
+      verbal: ["parle de ressentis", "« je suis désolé(e) de... »", "voix douce, posée", "tournures attentionnées"],
+      nonVerbal: ["sourire chaleureux", "regard bienveillant", "tenue soignée, harmonieuse", "objets personnels (photos, plantes)"],
     },
     do: [
-      "Aller droit au but, pas de bavardage",
-      "Présenter options + bénéfices concrets",
-      "Donner le choix final, le laisser décider",
-      "Parler résultats, ROI, gains de temps",
+      "Saluer avec chaleur, prendre des nouvelles sincères",
+      "Reconnaître la personne (« merci d'être là »)",
+      "Soigner l'ambiance, le cadre",
+      "Accueillir les émotions sans les juger",
     ],
     dont: [
-      "Tourner autour du pot ou raconter sa vie",
-      "Trop de détails techniques en premier",
-      "Imposer son rythme lent",
-      "Remettre son autorité en question frontalement",
+      "Être sec, froid, factuel uniquement",
+      "Critiquer la personne (pas le travail)",
+      "Ignorer les émotions exprimées",
+      "Bousculer le rythme relationnel",
     ],
-    intro: "Bonjour, j'ai trois propositions pour atteindre votre objectif X — je vous présente la plus efficace en 2 minutes ?",
+    intro: "Bonjour, je suis content(e) de vous voir. Comment vous sentez-vous ? J'ai pensé à vous pour un sujet, on en parle ?",
+    driver: "Fais plaisir",
   },
-  I: {
-    name: "Influent",
-    color: "var(--i)",
-    keywords: ["idée", "génial", "ensemble", "fun", "histoire"],
+  tr: {
+    code: "tr",
+    name: "Travaillomane",
+    nick: "Le Penseur",
+    color: "var(--tr)",
+    perception: "Pensées, faits, logique",
+    canal: "Interrogatif (questions logiques, factuelles)",
+    needs: ["Reconnaissance du travail accompli (qualité, expertise)", "Structuration du temps (planning, jalons)"],
+    forces: ["Logique", "Organisé", "Responsable", "Fiable"],
+    keywords: ["logiquement", "concrètement", "données", "planning", "objectif"],
     signals: {
-      verbal: ["raconte des anecdotes", "rit, exagère", "questions ouvertes", "parle beaucoup", "« j'ai senti que… »"],
-      nonVerbal: ["sourire, contact visuel chaleureux", "gestes expressifs", "touche le bras", "ton enjoué"],
-      values: ["reconnaissance", "spontanéité", "relation", "créativité"],
+      verbal: ["pose des questions précises", "structure ses phrases", "cite des chiffres", "« il y a 3 points »"],
+      nonVerbal: ["tenue classique, soignée", "ponctualité", "bureau ordonné", "prise de notes systématique"],
     },
     do: [
-      "Commencer par du chaleureux, du personnel",
-      "Montrer enthousiasme, sourire",
-      "Le valoriser, reconnaître ses idées",
-      "Laisser place à l'improvisation",
-    ],
-    dont: [
-      "Être froid, factuel, monotone",
-      "Lui couper la parole sèchement",
-      "Saturer de chiffres et de procédures",
-      "L'isoler ou l'ignorer",
-    ],
-    intro: "Salut ! Ravi de te voir — j'ai une idée que tu vas adorer, je peux t'en parler ?",
-  },
-  S: {
-    name: "Stable",
-    color: "var(--s)",
-    keywords: ["équipe", "tranquille", "habitude", "rassurer", "ensemble"],
-    signals: {
-      verbal: ["ton posé, doux", "écoute plus qu'il ne parle", "« qu'en penses-tu ? »", "phrases prudentes"],
-      nonVerbal: ["posture détendue", "sourire discret", "regard bienveillant", "rythme lent"],
-      values: ["sécurité", "loyauté", "harmonie", "stabilité"],
-    },
-    do: [
-      "Prendre le temps, créer un climat de confiance",
-      "Rassurer sur l'impact et les changements",
-      "Inclure l'équipe, l'humain",
-      "Avancer pas à pas, sans pression",
-    ],
-    dont: [
-      "Bousculer, imposer un changement brutal",
-      "Mettre en avant la compétition",
-      "Le confronter publiquement",
-      "Survendre / promesses excessives",
-    ],
-    intro: "Bonjour, est-ce que c'est un bon moment pour échanger 10 minutes sur le projet ? On verra ensemble ce qui vous semble réaliste.",
-  },
-  C: {
-    name: "Consciencieux",
-    color: "var(--c)",
-    keywords: ["données", "preuve", "logique", "méthode", "qualité"],
-    signals: {
-      verbal: ["pose des questions précises", "demande des sources", "vocabulaire technique", "phrases structurées"],
-      nonVerbal: ["distance physique", "peu d'expression faciale", "prend des notes", "rythme mesuré"],
-      values: ["exactitude", "rigueur", "expertise", "raison"],
-    },
-    do: [
-      "Préparer des faits, données, sources",
+      "Préparer faits, données, sources",
       "Structurer : contexte → analyse → conclusion",
-      "Lui laisser le temps d'analyser",
-      "Respecter sa distance, ne pas le brusquer",
+      "Reconnaître la qualité de son travail",
+      "Donner un planning clair, respecter le temps",
     ],
     dont: [
       "Improviser, parler à l'instinct",
-      "Pression émotionnelle ou affective",
-      "Généralités, approximations",
-      "Familiarité prématurée",
+      "Pression émotionnelle, drama",
+      "Retards, imprécisions, approximations",
+      "Reconnaissance de la personne sans reconnaître le travail",
     ],
-    intro: "Bonjour, j'aimerais vous présenter une analyse sur X. J'ai préparé les données et la méthodologie — vous souhaitez que je vous envoie le document avant qu'on en discute ?",
+    intro: "Bonjour, j'ai préparé une note structurée en 3 points sur le sujet X. Vous voulez qu'on la passe en revue maintenant, 15 minutes ?",
+    driver: "Sois parfait",
+  },
+  pe: {
+    code: "pe",
+    name: "Persévérant",
+    nick: "Le Convaincu",
+    color: "var(--pe)",
+    perception: "Opinions, jugements, valeurs",
+    canal: "Interrogatif (sur les opinions et convictions)",
+    needs: ["Reconnaissance du travail accompli", "Reconnaissance des convictions, des valeurs"],
+    forces: ["Engagé", "Consciencieux", "Observateur", "Dévoué"],
+    keywords: ["à mon avis", "il faudrait", "important", "principe", "qualité"],
+    signals: {
+      verbal: ["donne son avis spontanément", "« je crois que... »", "défend ses idées", "ton convaincu"],
+      nonVerbal: ["posture droite", "regard franc", "tenue classique", "objets marquant ses engagements"],
+    },
+    do: [
+      "Demander explicitement son avis, son point de vue",
+      "Valoriser ses convictions, ses engagements",
+      "Faire référence à des principes, à de la qualité",
+      "Reconnaître le sérieux de son travail",
+    ],
+    dont: [
+      "Remettre en cause ses valeurs sans dialogue",
+      "Lui imposer une décision sans expliquer le pourquoi",
+      "Frivolité ou légèreté excessive",
+      "Le contredire frontalement",
+    ],
+    intro: "Bonjour, j'aimerais avoir votre opinion sur X — c'est un sujet sur lequel votre point de vue compte vraiment pour moi.",
+    driver: "Sois parfait (pour les autres)",
+  },
+  rv: {
+    code: "rv",
+    name: "Rêveur",
+    nick: "L'Imagineur",
+    color: "var(--rv)",
+    perception: "Imagination, réflexion intérieure",
+    canal: "Directif bienveillant (dire clairement quoi faire)",
+    needs: ["Solitude, espace personnel, temps de réflexion"],
+    forces: ["Imaginatif", "Calme", "Réfléchi", "Capable de profondeur"],
+    keywords: ["peut-être", "imagine", "réfléchir", "tranquille"],
+    signals: {
+      verbal: ["parle peu, silences", "phrases courtes ou inachevées", "ton calme, parfois absent", "« je ne sais pas... »"],
+      nonVerbal: ["posture en retrait", "regard parfois lointain", "peu de gestes", "préfère l'écrit ou le face-à-face calme"],
+    },
+    do: [
+      "Lui parler en tête à tête, dans un endroit calme",
+      "Être directif et bienveillant : « voici ce que je te demande »",
+      "Lui donner du temps et de l'espace pour réfléchir",
+      "Lui demander explicitement, sans l'attendre à l'initiative",
+    ],
+    dont: [
+      "L'interrompre dans sa réflexion",
+      "Le mettre dans un groupe bruyant et exiger une réponse immédiate",
+      "Attendre qu'il prenne l'initiative spontanément",
+      "Sur-stimuler (multi-canal, urgences, sollicitations)",
+    ],
+    intro: "Bonjour. J'ai besoin que vous fassiez X pour Y. Prenez le temps d'y réfléchir, on en reparle demain matin si vous voulez.",
+    driver: "Sois fort (variant : Fais des efforts)",
+  },
+  rb: {
+    code: "rb",
+    name: "Rebelle",
+    nick: "L'Énergique",
+    color: "var(--rb)",
+    perception: "Réactions (j'aime / j'aime pas)",
+    canal: "Émotif / ludique (énergie, jeu, surprise)",
+    needs: ["Contacts ludiques (jeu, fun, légèreté)"],
+    forces: ["Spontané", "Créatif", "Ludique", "Présent dans l'instant"],
+    keywords: ["génial", "naze", "trop bien", "marrant", "wow"],
+    signals: {
+      verbal: ["onomatopées, exclamations", "« j'adore ! », « j'déteste ! »", "rit, blague", "vocabulaire imagé"],
+      nonVerbal: ["tenue originale, couleurs", "mimiques expressives", "gestes vifs", "rit facilement"],
+    },
+    do: [
+      "Apporter du fun, de l'énergie, de la surprise",
+      "Jouer, faire rire, créer de l'ambiance",
+      "Réagir à ses « j'aime / j'aime pas »",
+      "Être présent, vivant, dans l'instant",
+    ],
+    dont: [
+      "Trop de sérieux, monotonie, formalisme",
+      "Procédures rigides, paperasse",
+      "L'enfermer dans un cadre prévisible",
+      "Lui faire la morale",
+    ],
+    intro: "Hey ! J'ai un truc fun à te proposer, ça va te plaire — t'as 5 minutes que je t'embarque ?",
+    driver: "Fais des efforts",
+  },
+  pr: {
+    code: "pr",
+    name: "Promoteur",
+    nick: "Le Fonceur",
+    color: "var(--pr)",
+    perception: "Actions",
+    canal: "Directif (clair, action, défi)",
+    needs: ["Excitation, intensité, défi (« sentir vivre »)"],
+    forces: ["Adaptable", "Charmeur", "Persuasif", "Action"],
+    keywords: ["go", "deal", "défi", "tout de suite", "tu peux"],
+    signals: {
+      verbal: ["phrases courtes, percutantes", "verbes d'action", "tutoiement rapide", "« on y va »"],
+      nonVerbal: ["tenue qui se remarque (montre, signature visuelle)", "gestes amples", "poignée ferme", "présence physique forte"],
+    },
+    do: [
+      "Aller à l'action, lancer un défi clair",
+      "Être direct, court, percutant",
+      "Faire un deal explicite (give & take)",
+      "Reconnaître son audace, son cran",
+    ],
+    dont: [
+      "Long discours, analyse interminable",
+      "Hésitations, mollesse",
+      "Trop de règles, de paperasse",
+      "Le materner ou le rassurer (il déteste)",
+    ],
+    intro: "Tu veux relever un défi qui peut tout changer ? Voilà le deal : tu fais X, tu gagnes Y. On y va ?",
+    driver: "Sois fort",
   },
 };
 
-/* ============== MODULE 1 : DÉTAILS PROFIL ============== */
+const order = ["em","tr","pe","rv","rb","pr"];
+
+/* ============================================================
+   MODULE 1 : DÉTAIL D'UN PROFIL
+   ============================================================ */
 
 const detailEl = document.getElementById("profile-detail");
 document.querySelectorAll(".profile-card").forEach(card => {
-  card.addEventListener("click", () => showProfile(card.dataset.profile));
+  if (card.dataset.profile) card.addEventListener("click", () => showProfile(card.dataset.profile));
 });
 
 function showProfile(key) {
   const p = profiles[key];
   detailEl.innerHTML = `
     <details open>
-      <summary><span class="badge ${key}">${key}</span> ${p.name} — détails</summary>
-      <p><strong>Mots-clés :</strong> ${p.keywords.map(k => `<span class="signal-tag">${k}</span>`).join("")}</p>
+      <summary><span class="badge ${key}">${p.name.toUpperCase()}</span> ${p.nick} — détails</summary>
+      <p><strong>Perception :</strong> <span style="color:var(--text)">${p.perception}</span></p>
+      <p><strong>Canal de communication :</strong> <span style="color:var(--text)">${p.canal}</span></p>
+      <p><strong>Besoins psychologiques :</strong></p>
+      <ul style="color:var(--text)">${p.needs.map(n => `<li>${n}</li>`).join("")}</ul>
+      <p><strong>Mots-clés à repérer :</strong> ${p.keywords.map(k => `<span class="signal-tag">${k}</span>`).join("")}</p>
       <div class="traits">
         <div>
           <h4>Signaux verbaux</h4>
@@ -477,12 +633,12 @@ function showProfile(key) {
           <ul>${p.signals.nonVerbal.map(s => `<li>${s}</li>`).join("")}</ul>
         </div>
         <div>
-          <h4>Valeurs profondes</h4>
-          <ul>${p.signals.values.map(s => `<li>${s}</li>`).join("")}</ul>
+          <h4>Forces</h4>
+          <ul>${p.forces.map(s => `<li>${s}</li>`).join("")}</ul>
         </div>
         <div>
-          <h4>Phrase d'introduction efficace</h4>
-          <p style="color:var(--text);font-style:italic">« ${p.intro} »</p>
+          <h4>Phrase d'introduction</h4>
+          <p style="color:var(--text);font-style:italic;margin:0">« ${p.intro} »</p>
         </div>
       </div>
       <div class="traits">
@@ -495,74 +651,50 @@ function showProfile(key) {
           <ul>${p.dont.map(s => `<li>${s}</li>`).join("")}</ul>
         </div>
       </div>
+      <p style="margin-top:1rem;color:var(--muted)"><strong>Driver sous stress :</strong> « ${p.driver} »</p>
     </details>
   `;
   detailEl.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/* ============== MODULE 2 : RECONNAITRE ============== */
+/* ============================================================
+   MODULE 2 : RECONNAÎTRE
+   ============================================================ */
 
 const recognitionQuestions = [
-  {
-    text: "En réunion, Marc t'interrompt : « Bon, on n'a pas la journée. Quelle est la décision ? Quels sont les chiffres clés ? »",
-    answer: "D",
-    explain: "Phrases courtes, interruption, focus sur la décision et les chiffres = profil Dominant.",
-  },
-  {
-    text: "Sophie arrive en souriant : « Oh mais j'ai adoré le dernier projet ! On pourrait imaginer un truc encore plus fou cette fois, j'ai plein d'idées à te raconter ! »",
-    answer: "I",
-    explain: "Enthousiasme, exagération, focus sur les idées et le relationnel = profil Influent.",
-  },
-  {
-    text: "Hugo demande, calmement : « Est-ce que ça pose problème si je prends le temps d'en discuter avec l'équipe avant de répondre ? Je voudrais que tout le monde soit à l'aise. »",
-    answer: "S",
-    explain: "Ton posé, recherche de consensus, prudence, attention à l'équipe = profil Stable.",
-  },
-  {
-    text: "Léa demande : « Sur quelle source repose cette estimation ? Quelle est la marge d'erreur ? Je peux voir la méthode de calcul ? »",
-    answer: "C",
-    explain: "Questions précises, demande de sources, focus méthode = profil Consciencieux.",
-  },
-  {
-    text: "Au téléphone, Karim coupe net : « Trois options max. Tu me dis laquelle marche le mieux et on avance. »",
-    answer: "D",
-    explain: "Directif, veut décider vite, déteste les détours = Dominant.",
-  },
-  {
-    text: "Inès t'envoie un message à 23h : « Tu vas pas me croire ce qui m'est arrivé aujourd'hui !! Faut absolument qu'on se voie, j'ai trop de trucs à te raconter 😂 »",
-    answer: "I",
-    explain: "Spontanéité, expressivité, besoin de partager = Influent.",
-  },
-  {
-    text: "Lors d'un changement d'outil, Pierre dit : « Tant que ça ne perturbe pas trop l'équipe, ça me va. On peut peut-être y aller progressivement ? »",
-    answer: "S",
-    explain: "Veut éviter le changement brutal, pense à l'équipe, propose la progressivité = Stable.",
-  },
-  {
-    text: "Avant de signer, Claire relit en silence pendant 10 minutes, puis : « Page 4, paragraphe 3 : il manque la clause de réversibilité. C'est un point bloquant. »",
-    answer: "C",
-    explain: "Lit en détail, repère précisément, rigueur = Consciencieux.",
-  },
+  { text: "Sophie t'accueille : « Bonjour, comment vas-tu ? J'ai préparé du thé, installe-toi confortablement. Tu m'as l'air fatigué(e) en ce moment, tout va bien ? »", answer: "em", explain: "Accueil chaleureux, attention sensorielle (thé, confort), prise de nouvelles de la personne = type Empathique." },
+  { text: "Marc te demande : « Quel est l'objectif chiffré ? Quel délai ? J'ai noté 3 questions, on les passe dans l'ordre ? »", answer: "tr", explain: "Questions précises, chiffres, structure en 3 points = Travaillomane." },
+  { text: "Hugo dit : « À mon avis, ce projet ne respecte pas nos engagements envers les clients. C'est un principe important pour moi. »", answer: "pe", explain: "Opinion affirmée, référence à des principes et engagements = Persévérant." },
+  { text: "Léa reste silencieuse 30 secondes après ta question, puis : « ... peut-être... je vais y réfléchir. »", answer: "rv", explain: "Silence, peu de mots, besoin de temps intérieur = Rêveur." },
+  { text: "Karim entre en lançant : « Yo ! Trop bien que tu sois là, on va se marrer aujourd'hui ! T'as vu le mail du boss ? Énorme ! »", answer: "rb", explain: "Énergie, exclamations, ludique, vocabulaire imagé = Rebelle." },
+  { text: "Inès te coupe : « Bon, qu'est-ce qu'on fait ? Donne-moi 2 options et on tranche. J'ai pas la matinée. »", answer: "pr", explain: "Direct, orienté action, demande des options pour décider vite = Promoteur." },
+  { text: "Dans son bureau, Claire a aligné ses dossiers par couleur. Elle ouvre : « J'ai analysé les données. Voici les 4 conclusions, dans l'ordre de priorité. »", answer: "tr", explain: "Ordre, analyse structurée, priorisation logique = Travaillomane." },
+  { text: "Au déjeuner d'équipe, Tom dit : « C'est important qu'on soit tous bien ensemble. On peut faire l'effort de mieux s'écouter ? »", answer: "em", explain: "Focus sur le bien-être collectif, attention aux relations = Empathique." },
+  { text: "En réunion, Pierre déclare : « Je ne suis pas d'accord. Ce choix manque d'éthique vis-à-vis de nos équipes. »", answer: "pe", explain: "Opinion forte, référence éthique, défend une valeur = Persévérant." },
+  { text: "Tu invites Anna à un brainstorming. Elle te demande : « C'est combien de personnes ? Est-ce que je peux préparer ma contribution à l'avance et l'envoyer ? »", answer: "rv", explain: "Préfère préparer seul, dans le calme, plutôt que l'improvisation en groupe = Rêveur." },
+  { text: "Sur Teams, Manu écrit : « C'est TROP NUL cette procédure 😂😂 sérieux qui a inventé ça ?? On fait autrement ? »", answer: "rb", explain: "Réaction émotionnelle immédiate, ludique, conteste le cadre = Rebelle." },
+  { text: "Nico te lance au téléphone : « Trois minutes max. Tu me proposes quoi de concret ? On signe ce soir si c'est bon. »", answer: "pr", explain: "Action, temps court, décision rapide = Promoteur." },
 ];
 
-let recIdx = 0, recScore = 0;
+let recIdx = 0;
 function renderRec() {
   const q = recognitionQuestions[recIdx];
   const card = document.getElementById("rec-card");
   document.getElementById("rec-progress").style.width = (recIdx / recognitionQuestions.length) * 100 + "%";
   if (!q) {
+    document.getElementById("rec-progress").style.width = "100%";
     card.innerHTML = `
-      <h3>Module terminé ! 🎉</h3>
-      <p style="color:var(--text)">Tu as obtenu <strong>${recScore} / ${recognitionQuestions.length}</strong> sur la reconnaissance des profils.</p>
-      <div class="actions"><button onclick="recIdx=0;recScore=0;renderRec()">Recommencer</button></div>
+      <h3>Module terminé 🎉</h3>
+      <p style="color:var(--text)">Tu as parcouru les 12 mises en situation. Tu commences à repérer les marqueurs verbaux et comportementaux de chaque type.</p>
+      <div class="actions"><button onclick="recIdx=0;renderRec()">Recommencer</button></div>
     `;
     return;
   }
   card.innerHTML = `
     <div class="scenario-text">${q.text}</div>
-    <p style="color:var(--text)"><strong>De quel profil s'agit-il ?</strong></p>
+    <p style="color:var(--text)"><strong>De quel type s'agit-il ?</strong></p>
     <div class="options">
-      ${["D","I","S","C"].map(k => `<button data-k="${k}"><span class="badge ${k}">${k}</span> ${profiles[k].name}</button>`).join("")}
+      ${order.map(k => `<button data-k="${k}"><span class="badge ${k}">${profiles[k].name.substring(0,4).toUpperCase()}</span> ${profiles[k].name}</button>`).join("")}
     </div>
     <div id="rec-feedback"></div>
   `;
@@ -573,13 +705,11 @@ function renderRec() {
       const isOK = k === q.answer;
       if (isOK) {
         btn.classList.add("correct");
-        recScore++;
-        addScore(true);
       } else {
         btn.classList.add("wrong");
         card.querySelector(`.options button[data-k="${q.answer}"]`).classList.add("correct");
-        addScore(false);
       }
+      addScore(isOK);
       document.getElementById("rec-feedback").innerHTML = `
         <div class="feedback ${isOK ? 'ok' : 'ko'}">
           <strong>${isOK ? "Bien vu !" : "Pas tout à fait."}</strong>
@@ -591,43 +721,63 @@ function renderRec() {
   });
 }
 
-/* ============== MODULE 3 : INTRODUIRE ============== */
+/* ============================================================
+   MODULE 3 : INTRODUIRE
+   ============================================================ */
 
 const introQuestions = [
   {
-    context: "Tu rencontres Marc (Dominant), directeur commercial pressé, dans le couloir. Tu veux lui proposer un nouvel outil.",
-    profile: "D",
+    context: "Tu croises Sophie (Empathique), responsable RH, à la machine à café. Tu veux lui parler d'un projet de bien-être au travail.",
+    profile: "em",
     options: [
-      { text: "« Bonjour Marc, comment vas-tu ? Tu as eu un bon week-end ? J'aimerais qu'on prenne un moment quand tu veux pour parler d'un nouveau projet… »", ok: false, why: "Trop de bavardage et pas d'objectif clair. Le Dominant veut savoir POURQUOI tu l'arrêtes." },
-      { text: "« Marc, 2 minutes : j'ai un outil qui peut faire gagner 20% de temps à ton équipe commerciale. Je te montre ? »", ok: true, why: "Direct, bénéfice chiffré, demande sa décision. Le Dominant capte l'enjeu en 5 secondes." },
-      { text: "« Marc, j'ai préparé un document de 12 pages sur un nouvel outil, est-ce que tu pourrais le lire d'ici demain ? »", ok: false, why: "Trop de détails sans bénéfice immédiat. Tu lui imposes une charge. À éviter en accroche." },
+      { text: "« Sophie, j'ai besoin d'une décision rapide sur le projet bien-être. Tu as 5 min ? »", ok: false, why: "Trop directif et froid. L'Empathique a besoin de chaleur d'abord, pas d'un agenda." },
+      { text: "« Sophie, bonjour ! Je suis content(e) de te voir — j'ai pensé à toi pour un projet qui touche au bien-être de l'équipe, j'aimerais qu'on en parle ensemble. »", ok: true, why: "Salutation chaleureuse, prise de contact personnelle, invitation à un échange ensemble = canal Nourricier parfait." },
+      { text: "« Sophie, peux-tu me dire quel est le budget bien-être 2026 ? Je veux les chiffres exacts. »", ok: false, why: "Canal Interrogatif factuel = bon pour Travaillomane, pas pour Empathique." },
     ],
   },
   {
-    context: "Tu croises Sophie (Influente) en pause café. Tu veux la convaincre de rejoindre un projet.",
-    profile: "I",
+    context: "Tu présentes une nouvelle méthode à Marc (Travaillomane), directeur financier.",
+    profile: "tr",
     options: [
-      { text: "« Sophie, j'ai analysé les indicateurs du dernier trimestre et il en ressort un besoin de réorganisation… »", ok: false, why: "Trop froid, factuel, sans émotion. L'Influent décroche dès la première phrase analytique." },
-      { text: "« Sophie ! Trop contente de te croiser — j'ai un projet qui te ressemble totalement, plein de créa et de visibilité. Tu veux que je te raconte ? »", ok: true, why: "Chaleureux, valorise sa créativité, promesse de reconnaissance. Parfait pour un Influent." },
-      { text: "« Sophie, peux-tu remplir ce formulaire d'engagement avant vendredi ? »", ok: false, why: "Aucun lien, aucune émotion. L'Influent a besoin d'être embarqué, pas administré." },
+      { text: "« Marc, j'ai préparé une analyse en 3 points : contexte, méthode, résultats attendus. Je te présente ça en 15 minutes ? »", ok: true, why: "Structure annoncée, durée précise, contenu factuel = canal Interrogatif logique parfait." },
+      { text: "« Marc, j'ai un super pressentiment sur cette méthode, fais-moi confiance ! »", ok: false, why: "Aucune donnée, registre émotionnel = rejet immédiat par le Travaillomane." },
+      { text: "« Marc, comment tu te sens aujourd'hui ? Tu as bien dormi ? »", ok: false, why: "Canal Nourricier appliqué à un Travaillomane = il trouve ça intrusif et hors-sujet." },
     ],
   },
   {
-    context: "Tu dois annoncer un changement d'organisation à Hugo (Stable), qui est dans ton équipe depuis 8 ans.",
-    profile: "S",
+    context: "Tu veux convaincre Pierre (Persévérant), chef d'équipe, d'adopter une nouvelle politique.",
+    profile: "pe",
     options: [
-      { text: "« Hugo, on change tout lundi : nouveau bureau, nouvelle équipe, nouveau manager. C'est mieux comme ça. »", ok: false, why: "Trop brutal. Le Stable a besoin de temps, d'explication et d'être rassuré sur l'humain." },
-      { text: "« Hugo, est-ce qu'on peut prendre un café tranquillement ? Je voudrais te parler d'un changement qui arrive, te demander ton ressenti et voir comment on peut le faire en douceur. »", ok: true, why: "Cadre calme, dialogue, prise en compte de son ressenti, progressivité. Idéal pour un Stable." },
-      { text: "« Hugo, j'attends que tu signes ce nouveau contrat avant 17h. Pas le temps d'en discuter aujourd'hui. »", ok: false, why: "Pression + pas de dialogue = anxiété maximale pour un Stable." },
+      { text: "« Pierre, fais-le, c'est plus rapide comme ça. »", ok: false, why: "Imposer sans expliquer = vexant pour un Persévérant qui veut comprendre le pourquoi." },
+      { text: "« Pierre, j'aimerais avoir ton opinion sur cette politique — elle touche à des valeurs importantes (équité, qualité), et ton point de vue compte vraiment pour moi. »", ok: true, why: "Demande d'opinion + référence aux valeurs + reconnaissance = canal Interrogatif sur les convictions, idéal." },
+      { text: "« Pierre, hey ! On va faire un truc fun, tu vas voir ! »", ok: false, why: "Canal Émotif / ludique = OK pour un Rebelle, pas pour un Persévérant qui veut du sérieux." },
     ],
   },
   {
-    context: "Tu présentes une nouvelle stratégie à Claire (Consciencieuse), CFO méticuleuse.",
-    profile: "C",
+    context: "Tu veux confier un dossier important à Anna (Rêveuse), analyste senior.",
+    profile: "rv",
     options: [
-      { text: "« Claire, je le sens vraiment bien ce projet, j'ai un super pressentiment, fais-moi confiance ! »", ok: false, why: "Aucune donnée, aucun raisonnement. Le Consciencieux décroche : « pressentiment » est un repoussoir." },
-      { text: "« Claire, j'ai préparé une note de 4 pages : hypothèses, méthodologie, sensibilité et risques. Je te l'envoie ce soir, on en discute jeudi ? »", ok: true, why: "Structuré, factuel, temps laissé à l'analyse, respect du processus. Parfait pour un Consciencieux." },
-      { text: "« Claire, on n'a pas le temps de tout détailler, fais-moi confiance et signons. »", ok: false, why: "C'est l'inverse de ce dont elle a besoin : exactitude et vérification." },
+      { text: "« Anna ! On va brainstormer ce dossier tous ensemble à 14h, ça va être génial ! »", ok: false, why: "Groupe + spontanéité = stress pour un Rêveur. Il a besoin de solitude et de temps." },
+      { text: "« Anna, je te demande de prendre en charge le dossier X. Je te transmets les éléments par écrit. Prends le temps qu'il te faut, on en reparle vendredi. »", ok: true, why: "Demande directe et claire (canal Directif), écrit, temps individuel = idéal pour un Rêveur." },
+      { text: "« Anna, qu'en penses-tu si tu prenais peut-être ce dossier, à moins que tu préfères qu'on en discute en équipe ? »", ok: false, why: "Trop d'options ouvertes = paralyse le Rêveur qui attend qu'on lui dise clairement quoi faire." },
+    ],
+  },
+  {
+    context: "Tu veux embarquer Manu (Rebelle), créatif d'agence, sur un projet.",
+    profile: "rb",
+    options: [
+      { text: "« Manu, voici le brief en 14 pages avec la matrice de risque et les KPIs. Lis-le avant vendredi. »", ok: false, why: "Procédure + paperasse = repoussoir absolu pour un Rebelle." },
+      { text: "« Manu, je te demande ton avis raisonné sur le sens éthique de ce projet. »", ok: false, why: "Trop sérieux et conceptuel = le Rebelle décroche. Ce canal est pour le Persévérant." },
+      { text: "« Manu, j'ai un projet complètement délirant à te proposer — t'as 10 minutes pour qu'on s'éclate à imaginer un truc qui va surprendre tout le monde ? »", ok: true, why: "Énergie, fun, surprise, langage imagé = canal Émotif / ludique parfait pour le Rebelle." },
+    ],
+  },
+  {
+    context: "Tu veux proposer un partenariat à Nico (Promoteur), entrepreneur.",
+    profile: "pr",
+    options: [
+      { text: "« Nico, peux-tu lire ce dossier de 22 pages et me donner ton ressenti la semaine prochaine ? »", ok: false, why: "Long + flou + délai lointain = le Promoteur ferme la porte." },
+      { text: "« Nico, j'ai un deal pour toi : tu mets X, tu encaisses Y dans 6 mois. On signe demain ou on oublie ? »", ok: true, why: "Action, deal explicite, ultimatum sportif = canal Directif idéal pour le Promoteur." },
+      { text: "« Nico, j'aimerais qu'on prenne un café tranquillement pour faire connaissance d'abord. »", ok: false, why: "Trop relationnel, pas d'enjeu = le Promoteur s'ennuie. Ce canal est pour l'Empathique." },
     ],
   },
 ];
@@ -638,16 +788,17 @@ function renderInt() {
   const card = document.getElementById("int-card");
   document.getElementById("int-progress").style.width = (intIdx / introQuestions.length) * 100 + "%";
   if (!q) {
+    document.getElementById("int-progress").style.width = "100%";
     card.innerHTML = `
-      <h3>Module terminé ! 🎉</h3>
-      <p style="color:var(--text)">Tu maîtrises les ouvertures par profil. Passe au module pratique.</p>
+      <h3>Module terminé 🎉</h3>
+      <p style="color:var(--text)">Tu sais maintenant ouvrir une conversation dans le canal préféré de chacun des 6 types.</p>
       <div class="actions"><button onclick="intIdx=0;renderInt()">Recommencer</button></div>
     `;
     return;
   }
   card.innerHTML = `
-    <div class="scenario-text"><span class="badge ${q.profile}">${q.profile}</span> ${q.context}</div>
-    <p style="color:var(--text)"><strong>Quelle entrée en matière choisis-tu ?</strong></p>
+    <div class="scenario-text"><span class="badge ${q.profile}">${profiles[q.profile].name.toUpperCase()}</span> ${q.context}</div>
+    <p style="color:var(--text)"><strong>Quelle ouverture choisis-tu ?</strong></p>
     <div class="options">
       ${q.options.map((o, i) => `<button data-i="${i}">${o.text}</button>`).join("")}
     </div>
@@ -666,7 +817,7 @@ function renderInt() {
       addScore(o.ok);
       document.getElementById("int-feedback").innerHTML = `
         <div class="feedback ${o.ok ? 'ok' : 'ko'}">
-          <strong>${o.ok ? "Excellent choix !" : "Mauvaise approche."}</strong>
+          <strong>${o.ok ? "Excellent choix !" : "Mauvaise ouverture."}</strong>
           ${o.why}
         </div>
         <div class="actions"><button onclick="intIdx++;renderInt()">Suivant →</button></div>
@@ -675,61 +826,81 @@ function renderInt() {
   });
 }
 
-/* ============== MODULE 4 : PRATIQUER ============== */
+/* ============================================================
+   MODULE 4 : PRATIQUER
+   ============================================================ */
 
 const practiceQuestions = [
   {
-    context: "Tu présentes un projet à Marc (D). Il t'interrompt : « OK mais ça coûte combien et ça rapporte quoi ? »",
-    profile: "D",
+    context: "Sophie (Empathique) te dit : « Je ne sais pas... j'ai l'impression de ne pas être à la hauteur sur ce projet. »",
+    profile: "em",
     options: [
-      { text: "« Investissement 50k€, retour estimé à 200k€ sur 12 mois, point mort à 4 mois. »", ok: true, why: "Synthèse chiffrée et factuelle. Le D adore." },
-      { text: "« C'est compliqué, il y a plein de variables, je préfère t'expliquer la démarche d'abord. »", ok: false, why: "Le D entend « tu ne sais pas » et perd confiance." },
-      { text: "« L'équipe est tellement motivée que je suis sûr que ça va bien marcher ! »", ok: false, why: "Pas de chiffres, pas de décision possible. Le D décroche." },
+      { text: "« Sophie, tu es une personne précieuse pour l'équipe, et ce que tu apportes compte. On va regarder ensemble ce qui te bloque, sans pression. »", ok: true, why: "Reconnaissance de la personne (besoin n°1), invitation au lien, pas de jugement = canal Nourricier parfait." },
+      { text: "« Sophie, regarde les chiffres : tes résultats sont dans la moyenne, c'est objectif. »", ok: false, why: "Réponse logique à un besoin émotionnel = elle se sent encore plus seule." },
+      { text: "« Sophie, secoue-toi, fonce ! »", ok: false, why: "Pression et déni de l'émotion = l'Empathique se ferme et entre en stress." },
     ],
   },
   {
-    context: "Sophie (I) te dit : « Ton projet est génial, mais j'aimerais qu'on l'enrichisse — j'ai 10 nouvelles idées ! »",
-    profile: "I",
+    context: "Marc (Travaillomane) demande : « J'ai vu que le délai est passé de 6 à 7 semaines. Pourquoi ? »",
+    profile: "tr",
     options: [
-      { text: "« On a déjà validé la V1, on ne change plus rien. »", ok: false, why: "Couper l'élan d'un Influent le frustre énormément. À éviter." },
-      { text: "« Super, tes idées sont précieuses ! On en prend 2 ou 3 sur lesquelles tu auras la lead, et on garde les autres pour la V2. »", ok: true, why: "Tu valorises ses idées, lui donnes un rôle visible, tout en cadrant intelligemment." },
-      { text: "« Envoie-moi un document Excel structuré avec toutes tes idées et leur ROI. »", ok: false, why: "L'Influent déteste les process froids. Il ne le fera pas." },
+      { text: "« On a ajouté une étape de validation sécurité (impératif réglementaire) qui prend 5 jours ouvrés. Voici le planning révisé. »", ok: true, why: "Fait, cause logique, document mis à jour = canal Interrogatif logique respecté." },
+      { text: "« Bah tu sais comment c'est, ça arrive. »", ok: false, why: "Imprécision = le Travaillomane perd confiance en ta rigueur." },
+      { text: "« T'inquiète pas, on va y arriver, fais-moi confiance. »", ok: false, why: "Réponse émotionnelle, pas de fait = ne nourrit pas le besoin de reconnaissance du travail bien fait." },
     ],
   },
   {
-    context: "Hugo (S) hésite à accepter une promotion : « Je ne suis pas sûr d'être prêt, et ça va peut-être créer des tensions dans l'équipe… »",
-    profile: "S",
+    context: "Pierre (Persévérant) te dit : « Je ne signerai pas tant que l'équipe ne sera pas consultée. C'est une question de respect. »",
+    profile: "pe",
     options: [
-      { text: "« Allez, c'est un grand jour, fonce ! On verra bien. »", ok: false, why: "Le S ne « fonce » pas. Il a besoin d'être rassuré, pas bousculé." },
-      { text: "« Si tu ne décides pas avant demain, on prend quelqu'un d'autre. »", ok: false, why: "Pression = paralysie pour un S." },
-      { text: "« Je comprends ton hésitation. On peut en parler à l'équipe ensemble, prévoir un accompagnement, et tu prends ta décision tranquillement la semaine prochaine ? »", ok: true, why: "Tu reconnais ses peurs, impliques l'équipe, lui donnes le temps. C'est exactement ce qu'il lui faut." },
+      { text: "« Allez, signe, on n'a pas le temps. »", ok: false, why: "Mépriser ses valeurs = il s'arc-boute encore plus." },
+      { text: "« Pierre, je comprends ton attachement à ce principe et je le partage. Je te propose qu'on organise la consultation cette semaine, et je te tiens informé du résultat avant signature. Ça te convient ? »", ok: true, why: "Reconnaissance de la conviction, partage de la valeur, plan d'action concret = canal Interrogatif sur les opinions." },
+      { text: "« On va faire un truc fun avec l'équipe pour valider ça ! »", ok: false, why: "Ludique sur un sujet de valeurs = le Persévérant trouve ça frivole." },
     ],
   },
   {
-    context: "Claire (C) te demande : « Pourquoi as-tu choisi cette méthodologie plutôt qu'une autre ? »",
-    profile: "C",
+    context: "Tu confies un dossier à Anna (Rêveuse) en open space, devant toute l'équipe.",
+    profile: "rv",
     options: [
-      { text: "« Parce que c'est celle que je connais le mieux. »", ok: false, why: "Trop subjectif, le C voit ça comme un biais." },
-      { text: "« J'ai comparé 3 approches sur les critères de fiabilité, coût et délai. Voici le tableau comparatif et la grille de notation. »", ok: true, why: "Méthode rigoureuse, critères explicites, données visibles. Le C respecte." },
-      { text: "« Mon intuition me disait que c'était la bonne. »", ok: false, why: "Mot interdit avec un Consciencieux : « intuition ». Tu perds toute crédibilité." },
+      { text: "Lui demander à voix haute : « Anna, t'en penses quoi tout de suite ? »", ok: false, why: "Surprise + groupe = blocage total. Le Rêveur a besoin de temps et de calme." },
+      { text: "Lui envoyer un message privé : « Anna, je voudrais te confier le dossier X. On peut se voir 15 min en salle calme demain matin ? Je t'envoie déjà les éléments par mail. »", ok: true, why: "Écrit, 1-to-1, espace calme, temps de préparation = idéal pour un Rêveur." },
+      { text: "L'embarquer en réunion impromptue : « Viens, on en parle là, tout de suite ! »", ok: false, why: "Spontanéité + multi-stimulus = stress fort pour un Rêveur." },
     ],
   },
   {
-    context: "Tu animes une réunion avec les 4 profils en même temps. Comment ouvres-tu ?",
+    context: "Manu (Rebelle) lance en réunion : « Cette procédure est NULLE, c'est qui le génie qui a pondu ça ?? »",
+    profile: "rb",
+    options: [
+      { text: "« Manu, ton attitude est inacceptable, restons professionnels. »", ok: false, why: "Recadrer sec = le Rebelle se braque encore plus." },
+      { text: "« Haha t'as raison, c'est un peu rude — on remixe ça ensemble ? T'as 3 idées de pirate à proposer ? »", ok: true, why: "Accueillir l'énergie, jouer avec, inviter à la créativité = canal Émotif / ludique parfait." },
+      { text: "« Peux-tu argumenter rationnellement ton désaccord ? »", ok: false, why: "Demande logique sur un coup de gueule = le Rebelle s'ennuie et décroche." },
+    ],
+  },
+  {
+    context: "Nico (Promoteur) te dit : « Bon, ça avance pas ton truc. Je commence à me demander si je continue. »",
+    profile: "pr",
+    options: [
+      { text: "« Allez, encore un peu de patience, j'ai besoin de temps... »", ok: false, why: "Patience = mot interdit pour un Promoteur." },
+      { text: "« Nico, deal : je te livre 3 résultats concrets vendredi 18h. Si t'es pas satisfait, tu sors. Cap ou pas cap ? »", ok: true, why: "Action, deal, défi, ultimatum sportif = canal Directif parfait, tu nourris son besoin d'intensité." },
+      { text: "« Mais tu sais, on est tous fatigués, c'est dur pour tout le monde émotionnellement... »", ok: false, why: "Registre émotionnel = il décroche immédiatement." },
+    ],
+  },
+  {
+    context: "Réunion à 4 : Sophie (EM), Marc (TR), Pierre (PE), Manu (RB). Tu ouvres la réunion.",
     profile: "mix",
     options: [
-      { text: "« Objectif de cette réunion : décider de X. (D) On a 3 idées innovantes à explorer (I), un planning d'équipe à co-construire (S) et les données chiffrées dans le doc envoyé hier (C). On y va ? »", ok: true, why: "Tu adresses les 4 motivations en une phrase : décision, créativité, équipe, données. Tout le monde se sent vu." },
-      { text: "« Bon, on n'a pas la journée, accélérons. »", ok: false, why: "Tu parles au D uniquement. Le S se ferme, le I s'ennuie, le C s'inquiète du manque de cadre." },
-      { text: "« J'aimerais qu'on prenne le temps de bien se sentir avant de commencer. »", ok: false, why: "Tu parles au S uniquement. Le D s'impatiente, le C trouve ça flou." },
+      { text: "« Merci à tous d'être là (EM). J'ai préparé un ordre du jour structuré (TR), avec un point sur nos engagements clients qui sont en jeu (PE), et j'ai prévu une session créa fun à la fin (RB). On y va ? »", ok: true, why: "Chaque type entend son canal : reconnaissance, structure, valeurs, fun = tu adresses les 4 besoins en une phrase." },
+      { text: "« Allez, on attaque, j'ai pas la matinée. »", ok: false, why: "Tu parles uniquement au Promoteur (absent ici). Tu froisses tout le monde." },
+      { text: "« On va faire un grand brainstorming libre sans agenda ! »", ok: false, why: "Tu parles uniquement au Rebelle. Le Travaillomane et l'Empathique se sentent perdus." },
     ],
   },
   {
-    context: "Tu reçois un mail d'un client inconnu : « Bonjour, suite à notre échange téléphonique j'aimerais creuser le point 3 — pourriez-vous m'envoyer les références clients dans le secteur bancaire ? Cordialement. »",
-    profile: "C",
+    context: "Tu reçois ce mail : « Bonjour, suite à votre proposition, j'ai 4 questions techniques : 1) Méthode de calcul, 2) Source des données, 3) Hypothèses, 4) Sensibilité. Pouvez-vous étayer ? Cordialement. »",
+    profile: "tr",
     options: [
-      { text: "« Salut ! Trop content de notre échange, on s'appelle pour en parler ? 😊 »", ok: false, why: "Tu lis Influent dans un mail clairement Consciencieux. Tu vas casser la relation." },
-      { text: "« Bonjour, voici en pièce jointe 3 cas clients du secteur bancaire avec les indicateurs de performance détaillés. Je reste à votre disposition pour toute précision. »", ok: true, why: "Le mail est factuel, ciblé, soigné : c'est typique du C. Tu réponds en miroir." },
-      { text: "« Je vous appelle dans 5 minutes pour qu'on aille plus vite. »", ok: false, why: "Le C n'aime pas être pris par surprise. Demande-lui d'abord si un appel lui convient." },
+      { text: "« Hello ! Trop content de votre intérêt 😊 Je vous appelle ce soir pour en papoter ! »", ok: false, why: "Tu réponds en canal Émotif à un Travaillomane qui demande du factuel : tu perds la relation." },
+      { text: "« Bonjour, voici en pièce jointe une note de 4 pages répondant à vos 4 questions, dans l'ordre. Je reste disponible pour toute précision. »", ok: true, why: "Réponse en miroir, structure respectée, format soigné = tu nourris son besoin de structure et de reconnaissance du travail." },
+      { text: "« Faites-moi confiance, c'est fiable. »", ok: false, why: "Aucune source, aucune démonstration = rupture avec un Travaillomane." },
     ],
   },
 ];
@@ -740,19 +911,20 @@ function renderPra() {
   const card = document.getElementById("pra-card");
   document.getElementById("pra-progress").style.width = (praIdx / practiceQuestions.length) * 100 + "%";
   if (!q) {
+    document.getElementById("pra-progress").style.width = "100%";
     card.innerHTML = `
-      <h3>Bravo, tu as terminé tous les modules ! 🎉</h3>
-      <p style="color:var(--text)">N'oublie pas : le DISC est une grille de lecture, pas une étiquette. Observe d'abord, adapte ensuite, et reste authentique.</p>
+      <h3>Bravo, tu as terminé la pratique 🎉</h3>
+      <p style="color:var(--text)">Rappel clé du PCM : ce qui change, ce n'est pas <em>ce que</em> tu dis, c'est <em>comment</em> tu le dis et dans quel canal. Adapte ton canal, garde ton fond.</p>
       <div class="actions"><button onclick="praIdx=0;renderPra()">Recommencer</button></div>
     `;
     return;
   }
   const badge = q.profile === "mix"
-    ? `<span class="signal-tag">Profils mélangés</span>`
-    : `<span class="badge ${q.profile}">${q.profile}</span> ${profiles[q.profile].name}`;
+    ? `<span class="signal-tag">Plusieurs types simultanément</span>`
+    : `<span class="badge ${q.profile}">${profiles[q.profile].name.toUpperCase()}</span> ${profiles[q.profile].nick}`;
   card.innerHTML = `
     <div class="scenario-text">${badge}<br><br>${q.context}</div>
-    <p style="color:var(--text)"><strong>Quelle est ta meilleure réponse ?</strong></p>
+    <p style="color:var(--text)"><strong>Ta meilleure réponse ?</strong></p>
     <div class="options">
       ${q.options.map((o, i) => `<button data-i="${i}">${o.text}</button>`).join("")}
     </div>
@@ -771,7 +943,7 @@ function renderPra() {
       addScore(o.ok);
       document.getElementById("pra-feedback").innerHTML = `
         <div class="feedback ${o.ok ? 'ok' : 'ko'}">
-          <strong>${o.ok ? "Très bien." : "Réponse à retravailler."}</strong>
+          <strong>${o.ok ? "Très bien." : "À retravailler."}</strong>
           ${o.why}
         </div>
         <div class="actions"><button onclick="praIdx++;renderPra()">Suivant →</button></div>
@@ -780,37 +952,51 @@ function renderPra() {
   });
 }
 
-/* ============== MODULE 5 : AUTO-EVALUATION ============== */
+/* ============================================================
+   MODULE 5 : MON PROFIL
+   ============================================================ */
 
 const selfQuestions = [
-  { q: "En réunion, ma tendance naturelle est de :",
-    a: { D: "Pousser pour qu'on décide vite", I: "Lancer des idées et embarquer le groupe", S: "Écouter chacun et chercher le consensus", C: "Vérifier les données avant de me prononcer" } },
-  { q: "Mon style de prise de parole :",
-    a: { D: "Direct, parfois cassant", I: "Animé, chaleureux, plein d'anecdotes", S: "Posé, à l'écoute, mesuré", C: "Précis, structuré, factuel" } },
-  { q: "Quand je suis stressé(e), je deviens :",
-    a: { D: "Impatient(e), tranchant(e)", I: "Émotif(ve), bavard(e), désorganisé(e)", S: "Replié(e), passif(ve), je m'efface", C: "Critique, perfectionniste, je rumine" } },
-  { q: "Ma plus grande peur est :",
-    a: { D: "Perdre le contrôle ou échouer", I: "Être rejeté(e) ou ignoré(e)", S: "Le conflit ou un changement brutal", C: "Avoir tort ou être imprécis(e)" } },
-  { q: "Au travail, j'aime surtout :",
-    a: { D: "Atteindre des objectifs ambitieux", I: "Échanger, créer, inspirer", S: "Travailler en équipe stable", C: "Approfondir un sujet, le maîtriser" } },
-  { q: "Mon rythme préféré :",
-    a: { D: "Rapide, sous pression", I: "Variable, selon l'inspiration", S: "Régulier, sans précipitation", C: "Méthodique, par étapes" } },
-  { q: "Face à un imprévu :",
-    a: { D: "Je tranche immédiatement et j'avance", I: "Je rebondis, j'improvise", S: "Je m'adapte calmement, en équipe", C: "Je prends du recul pour analyser" } },
-  { q: "Mon entourage me décrirait comme :",
-    a: { D: "Énergique, exigeant(e), franc(he)", I: "Sociable, enthousiaste, expressif(ve)", S: "Fidèle, calme, attentionné(e)", C: "Sérieux(se), rigoureux(se), réfléchi(e)" } },
-  { q: "Je donne mon meilleur quand :",
-    a: { D: "On me laisse autonome avec un objectif clair", I: "Je peux échanger librement et être reconnu(e)", S: "L'ambiance est saine et bienveillante", C: "J'ai le temps et l'info nécessaires" } },
-  { q: "Mon point faible probable :",
-    a: { D: "Manque d'écoute ou de patience", I: "Manque de rigueur ou de focus", S: "Difficulté à dire non, lenteur à décider", C: "Trop critique ou paralysé(e) par les détails" } },
-  { q: "Ma façon de gérer un conflit :",
-    a: { D: "Je l'affronte directement", I: "J'essaie de désamorcer avec humour", S: "J'évite et je cherche l'apaisement", C: "J'analyse les faits et argumente" } },
-  { q: "Ce qui me motive le plus :",
-    a: { D: "Gagner, atteindre, dépasser", I: "Reconnaissance, plaisir, créativité", S: "Sentiment d'utilité, stabilité, lien", C: "Compréhension, expertise, qualité" } },
+  { q: "En groupe, mon comportement spontané est :",
+    a: { em: "Je veille à ce que chacun se sente bien", tr: "J'organise, je structure le temps", pe: "Je défends mes idées et mes convictions", rv: "Je reste en retrait et j'observe", rb: "Je mets de l'ambiance, je fais rire", pr: "Je prends les choses en main, on avance" } },
+  { q: "Ce qui me motive le plus au travail :",
+    a: { em: "Les relations humaines, l'ambiance", tr: "Un travail de qualité reconnu", pe: "Défendre une cause, des principes", rv: "Pouvoir réfléchir tranquillement", rb: "Que ce soit fun et varié", pr: "Les défis, l'intensité, l'action" } },
+  { q: "Le pire scénario pour moi :",
+    a: { em: "Être rejeté(e), ignoré(e), critiqué(e) en tant que personne", tr: "Faire un travail bâclé ou non reconnu", pe: "Trahir mes valeurs", rv: "Être sur-stimulé(e) sans pouvoir respirer", rb: "M'ennuyer, être enfermé(e) dans la routine", pr: "Stagner, ne pas pouvoir agir" } },
+  { q: "Mon style vestimentaire :",
+    a: { em: "Soigné, harmonieux, accessoires personnels", tr: "Classique, sobre, pratique", pe: "Classique, marquant un engagement (pin's, montre patrimoniale)", rv: "Discret, confortable, peu visible", rb: "Original, coloré, expressif", pr: "Marquant, signature visuelle (montre, bottes)" } },
+  { q: "Mon premier réflexe face à un problème :",
+    a: { em: "Comment les gens vont-ils vivre ça ?", tr: "Quelles sont les données ?", pe: "Est-ce que ça respecte nos principes ?", rv: "Laisse-moi y réfléchir un peu", rb: "Bon, on s'en sort comment de ce bazar ?!", pr: "On fait quoi MAINTENANT ?" } },
+  { q: "Le compliment qui me touche le plus :",
+    a: { em: "« Tu es quelqu'un de bien »", tr: "« Ton travail est de grande qualité »", pe: "« J'admire tes convictions »", rv: "« J'apprécie ta capacité à prendre du recul »", rb: "« T'es vraiment génial(e), j'adore être avec toi »", pr: "« T'as du cran, t'as su trancher »" } },
+  { q: "Quand je suis stressé(e), je tends à :",
+    a: { em: "Trop chercher à plaire, douter de moi", tr: "Sur-contrôler, devenir perfectionniste", pe: "Devenir critique, voir ce qui ne va pas", rv: "Me retirer, attendre passivement", rb: "Ronchonner, blâmer, faire des fautes d'inattention", pr: "Prendre des risques, manipuler pour avancer" } },
+  { q: "Ma façon de communiquer :",
+    a: { em: "Chaleureuse, attentive aux émotions", tr: "Structurée, factuelle, précise", pe: "Affirmée, je donne mon opinion", rv: "Peu de mots, je prends mon temps", rb: "Énergique, expressive, parfois familière", pr: "Directe, courte, orientée action" } },
+  { q: "Ce que je trouve insupportable chez les autres :",
+    a: { em: "La froideur, le manque d'empathie", tr: "L'imprécision, l'amateurisme", pe: "Le manque de principes, l'opportunisme", rv: "L'intrusion, le bruit, la pression", rb: "Le sérieux excessif, l'ennui", pr: "Les hésitations, la lenteur" } },
+  { q: "Mon environnement idéal :",
+    a: { em: "Chaleureux, esthétique, avec des gens que j'aime", tr: "Ordonné, calme, fonctionnel", pe: "Sobre, avec des objets qui ont du sens", rv: "Silencieux, isolé, peu de stimuli", rb: "Vivant, coloré, original", pr: "Stimulant, avec des défis à relever" } },
+  { q: "Quand je délègue, je préfère :",
+    a: { em: "Que la personne se sente bien, accompagnée", tr: "Donner une consigne précise et des délais", pe: "Vérifier qu'on partage la même vision", rv: "Donner du temps et de l'autonomie", rb: "Que ce soit fun et improvisé", pr: "Que ce soit fait, peu importe comment" } },
+  { q: "Mes amis me décrivent comme :",
+    a: { em: "Doux(ce), attentif(ve), bienveillant(e)", tr: "Sérieux(se), fiable, organisé(e)", pe: "Intègre, engagé(e), parfois rigide", rv: "Calme, profond(e), discret(e)", rb: "Drôle, vivant(e), spontané(e)", pr: "Audacieux(se), persuasif(ve), entreprenant(e)" } },
+  { q: "Une journée parfaite ressemble à :",
+    a: { em: "Du temps de qualité avec mes proches", tr: "Une journée bien planifiée et productive", pe: "Avoir défendu une cause qui me tient à cœur", rv: "Une journée calme, sans sollicitation", rb: "Plein d'imprévus marrants et de découvertes", pr: "Conclure un gros deal, gagner un challenge" } },
+  { q: "Mon rapport au temps :",
+    a: { em: "Le temps avec les autres est précieux", tr: "Le temps est une ressource à structurer", pe: "Le temps doit servir des choses importantes", rv: "J'ai besoin de mon propre rythme", rb: "Vivre l'instant présent !", pr: "Le temps, c'est de l'action et des opportunités" } },
+  { q: "Face à un conflit :",
+    a: { em: "Je cherche à apaiser, à recréer du lien", tr: "Je clarifie les faits", pe: "J'affirme ma position", rv: "Je me retire et observe", rb: "Je désamorce avec une blague ou je conteste", pr: "Je tranche pour avancer" } },
+  { q: "Ce qui me ressource :",
+    a: { em: "Un moment chaleureux avec quelqu'un que j'aime", tr: "Boucler un dossier proprement", pe: "Une victoire pour mes valeurs", rv: "Du silence, de la solitude", rb: "Une nouveauté, une surprise, un jeu", pr: "Une action gagnée, un challenge relevé" } },
+  { q: "Mon vocabulaire favori contient :",
+    a: { em: "Ressentir, ensemble, prendre soin", tr: "Concrètement, logiquement, planning", pe: "Important, principe, à mon avis", rv: "Peut-être, on verra, imaginer", rb: "Génial, naze, marrant, wow", pr: "Go, deal, fonce, maintenant" } },
+  { q: "Si on me demande mon opinion sans m'avoir consulté :",
+    a: { em: "Je m'adapte pour ne pas froisser", tr: "Je donne une réponse argumentée", pe: "Je donne mon avis franchement", rv: "Je prends le temps de réfléchir avant de répondre", rb: "Je réagis vite et avec humour", pr: "Je tranche sec, on perd pas de temps" } },
 ];
 
 let selfIdx = 0;
-let selfScores = { D: 0, I: 0, S: 0, C: 0 };
+let selfScores = { em: 0, tr: 0, pe: 0, rv: 0, rb: 0, pr: 0 };
 
 function renderSelf() {
   const q = selfQuestions[selfIdx];
@@ -819,47 +1005,52 @@ function renderSelf() {
 
   if (!q) {
     document.getElementById("self-progress").style.width = "100%";
-    const total = selfScores.D + selfScores.I + selfScores.S + selfScores.C;
+    const total = Object.values(selfScores).reduce((a, b) => a + b, 0);
     const sorted = Object.entries(selfScores).sort((a, b) => b[1] - a[1]);
     const dom = sorted[0][0];
     const sec = sorted[1][0];
-    const bars = ["D","I","S","C"].map(k => {
-      const pct = total ? Math.round((selfScores[k] / total) * 100) : 0;
+    const weak = sorted[sorted.length - 1][0];
+    const bars = sorted.map(([k, v]) => {
+      const pct = total ? Math.round((v / total) * 100) : 0;
+      const colorMap = { em: "var(--em)", tr: "var(--tr)", pe: "var(--pe)", rv: "var(--rv)", rb: "var(--rb)", pr: "var(--pr)" };
       return `
         <div style="margin-bottom:.8rem">
           <div style="display:flex;justify-content:space-between;margin-bottom:.2rem">
-            <span><span class="badge ${k}">${k}</span> ${profiles[k].name}</span>
+            <span><span class="badge ${k}">${profiles[k].name.toUpperCase()}</span> ${profiles[k].nick}</span>
             <span>${pct}%</span>
           </div>
-          <div class="progress" style="margin:0"><div class="progress-bar" style="width:${pct}%;background:${k==='D'?'var(--d)':k==='I'?'var(--i)':k==='S'?'var(--s)':'var(--c)'}"></div></div>
+          <div class="progress" style="margin:0"><div class="progress-bar" style="width:${pct}%;background:${colorMap[k]}"></div></div>
         </div>`;
     }).join("");
     card.innerHTML = `
-      <h3>Ton profil</h3>
-      <p style="color:var(--text);font-size:1.2rem">Dominant : <span class="badge ${dom}">${dom}</span> <strong>${profiles[dom].name}</strong> · Secondaire : <span class="badge ${sec}">${sec}</span> ${profiles[sec].name}</p>
+      <h3>Ton « immeuble » PCM</h3>
+      <p style="color:var(--text);font-size:1.1rem">Base probable : <span class="badge ${dom}">${profiles[dom].name.toUpperCase()}</span> <strong>${profiles[dom].nick}</strong></p>
+      <p style="color:var(--text)">Phase ou type fort secondaire : <span class="badge ${sec}">${profiles[sec].name.toUpperCase()}</span> ${profiles[sec].nick}</p>
+      <p style="color:var(--muted);font-size:.9rem"><em>Indication issue d'un mini-test ; un vrai inventaire PCM se fait avec un professionnel certifié.</em></p>
       ${bars}
       <div class="feedback ok" style="margin-top:1.5rem">
-        <strong>Force principale</strong>
-        ${profiles[dom].do[0]} · ${profiles[dom].do[1]}
+        <strong>Tes forces</strong>
+        ${profiles[dom].forces.join(", ")}. Canal naturel : ${profiles[dom].canal}.
       </div>
       <div class="feedback ko">
-        <strong>Vigilance / point d'attention</strong>
-        Tu peux avoir tendance à : ${profiles[dom].dont[0].toLowerCase()}.
+        <strong>Ton driver sous stress (à surveiller)</strong>
+        « ${profiles[dom].driver} » — risque : ${profiles[dom].dont[0].toLowerCase()}.
       </div>
-      <p style="color:var(--text);margin-top:1.5rem"><em>Pour mieux communiquer avec tes opposés (les profils où tu as le moins de points), revois le module 1 sur ces profils et applique-toi à les pratiquer.</em></p>
-      <div class="actions"><button onclick="selfIdx=0;selfScores={D:0,I:0,S:0,C:0};renderSelf()">Refaire le test</button></div>
+      <div class="feedback" style="border-left-color:var(--rv)">
+        <strong>Type le moins développé : ${profiles[weak].nick}</strong>
+        Pour mieux communiquer avec ce type d'interlocuteur, revois le module 1 sur le ${profiles[weak].name}, et entraîne-toi spécifiquement dans le module Conversation.
+      </div>
+      <div class="actions"><button onclick="selfIdx=0;selfScores={em:0,tr:0,pe:0,rv:0,rb:0,pr:0};renderSelf()">Refaire le test</button></div>
     `;
     return;
   }
 
-  const keys = ["D","I","S","C"];
-  // Shuffle order so the user doesn't memorise positions
-  const order = keys.slice().sort(() => Math.random() - 0.5);
+  const shuffled = order.slice().sort(() => Math.random() - 0.5);
   card.innerHTML = `
     <h3>Question ${selfIdx + 1} / ${selfQuestions.length}</h3>
-    <p style="color:var(--text);font-size:1.1rem"><strong>${q.q}</strong></p>
+    <p style="color:var(--text);font-size:1.05rem"><strong>${q.q}</strong></p>
     <div class="options">
-      ${order.map(k => `<button data-k="${k}">${q.a[k]}</button>`).join("")}
+      ${shuffled.map(k => `<button data-k="${k}">${q.a[k]}</button>`).join("")}
     </div>
   `;
   card.querySelectorAll(".options button").forEach(btn => {
@@ -871,187 +1062,219 @@ function renderSelf() {
   });
 }
 
-/* ============== MODULE 6 : CONVERSATION SIMULEE ============== */
+/* ============================================================
+   MODULE 6 : CONVERSATION SIMULÉE
+   ============================================================ */
 
 const chatScenarios = {
-  D: {
-    setting: "Tu rencontres Marc, directeur opérationnel (profil D). Il vient d'arriver dans ton bureau, debout, en train de regarder sa montre.",
+  em: {
+    setting: "Tu rejoins Sophie (Empathique), responsable RH, dans son bureau chaleureusement décoré. Plante verte, photos de famille, parfum subtil.",
     turns: [
-      {
-        bot: "Bon, j'ai 8 minutes. Tu voulais me parler de ton projet, c'est ça ? Vas-y.",
+      { bot: "Oh bonjour, je suis contente de te voir ! Installe-toi, je viens de faire du thé. Tu as l'air un peu tendu(e), tout va bien ?",
         options: [
-          { text: "Objectif : -15% de délai de livraison en 3 mois. Coût : 30k€. ROI estimé : 6 mois. Tu veux qu'on regarde le plan ?", score: 2, react: "Marc hoche la tête. « OK, ça me parle. Continue. »" },
-          { text: "Alors, je voulais te raconter le contexte d'abord, parce qu'il y a plein de choses qui ont mené à ce projet…", score: -2, react: "Marc soupire et regarde encore sa montre. « Abrège, on n'a pas la matinée. »" },
-          { text: "Bonjour Marc, comment vas-tu aujourd'hui ? Tu as bien dormi ?", score: -2, react: "Marc fronce les sourcils. « Sérieusement ? Tu m'as fait venir pour ça ? »" },
-        ],
-      },
-      {
-        bot: "Et le risque principal, c'est quoi ? Je veux pas qu'on se plante.",
+          { text: "Bonjour Sophie ! Merci pour le thé, ça fait du bien. Je suis content(e) de te voir aussi — je voulais te parler d'un sujet qui me tient à cœur.", score: 2, react: "Sophie sourit. « Avec plaisir, raconte-moi. »" },
+          { text: "Bonjour. J'ai 4 points à traiter, on commence par le premier ?", score: -2, react: "Sophie reste polie mais son sourire s'efface. « Euh... d'accord. »" },
+          { text: "Pas le temps de papoter, on y va.", score: -2, react: "Sophie se referme. « Très bien. » (le climat est froid)" },
+        ] },
+      { bot: "Tu sais, ce qui me touche en ce moment, c'est que je sens l'équipe un peu fatiguée...",
         options: [
-          { text: "C'est compliqué à dire, il y a beaucoup de variables, on verra à l'usage…", score: -2, react: "Marc lève les yeux. « Donc tu ne sais pas. Je ne signe pas. »" },
-          { text: "Deux risques : dépendance fournisseur (couverte par contrat) et adoption interne (plan formation en place). Probabilité résiduelle faible.", score: 2, react: "Marc note rapidement. « Bien. Tu y as pensé. »" },
-          { text: "Tu vas voir, ça va bien se passer, fais-moi confiance.", score: -1, react: "Marc : « Je ne fonctionne pas à la confiance. Je fonctionne aux chiffres. »" },
-        ],
-      },
-      {
-        bot: "Tu as besoin de quoi pour lancer ?",
+          { text: "Je le ressens aussi. Ça compte beaucoup que tu y sois attentive — et c'est justement de ça dont je voulais te parler.", score: 2, react: "Sophie : « Merci de me dire ça, ça me touche. »" },
+          { text: "Les chiffres montrent qu'on est dans la moyenne sectorielle, c'est OK.", score: -2, react: "Sophie : « Bon... mais derrière les chiffres il y a des gens. »" },
+          { text: "Si elle est fatiguée, qu'elle se reprenne, c'est tout.", score: -2, react: "Sophie blêmit. « C'est dur ce que tu dis. »" },
+        ] },
+      { bot: "Du coup, je me demandais si on pouvait organiser quelque chose pour eux. Mais je ne veux pas mal faire...",
         options: [
-          { text: "Ton GO et un budget validé d'ici vendredi. Le reste, je gère.", score: 2, react: "Marc sourit légèrement. « OK, ça c'est clair. »" },
-          { text: "On pourrait en reparler la semaine prochaine avec toute l'équipe pour s'aligner…", score: -1, react: "Marc : « Pourquoi attendre ? Décide maintenant. »" },
-          { text: "Je voudrais une réunion de 2h avec toi pour qu'on étudie chaque sous-point.", score: -2, react: "Marc : « Non. Donne-moi une synthèse. Une seule page. »" },
-        ],
-      },
-      {
-        bot: "Bon, t'es sûr de toi sur le délai ?",
+          { text: "Sophie, ton intuition est précieuse. Et si on imaginait ensemble une journée bien-être qui te ressemble ? Je peux porter la logistique avec toi.", score: 2, react: "Sophie rayonne. « Oh j'adore l'idée ! On en parle ? »" },
+          { text: "Fais ce que tu veux mais que ce soit chiffré.", score: -2, react: "Sophie : « ... » (elle se ferme, perd le fil)" },
+          { text: "Bof, le bien-être c'est secondaire face aux objectifs business.", score: -2, react: "Sophie est blessée. « Pour moi, c'est essentiel. »" },
+        ] },
+      { bot: "J'aurais juste peur de ne pas être à la hauteur pour porter ça...",
         options: [
-          { text: "Oui. Je m'engage personnellement. Tu auras un point chaque vendredi en 5 minutes.", score: 2, react: "Marc serre la main. « Parfait. J'aime quand c'est carré. »" },
-          { text: "Euh, à 90%... ça dépend de plusieurs facteurs externes...", score: -2, react: "Marc : « 90% = tu n'es pas sûr. Reviens quand tu es sûr. »" },
-          { text: "Honnêtement on verra bien, le projet est passionnant !", score: -2, react: "Marc : « Passionnant ne paye pas les factures. »" },
-        ],
-      },
-      {
-        bot: "Dernière question : qui pilote ?",
+          { text: "Sophie, tu es exactement la bonne personne pour ce sujet. Ton écoute, ta sensibilité, c'est précisément ce dont l'équipe a besoin. Je suis avec toi.", score: 2, react: "Sophie, émue : « Merci. Ça me donne du courage. »" },
+          { text: "Tu n'as qu'à te lancer, on verra bien.", score: -1, react: "Sophie : « Mouais, je ne suis pas plus rassurée... »" },
+          { text: "Si tu doutes, je peux confier ça à quelqu'un d'autre.", score: -2, react: "Sophie, blessée : « Tu me retires ce que tu venais de me proposer ? »" },
+        ] },
+      { bot: "Merci d'être venu(e) me parler de tout ça. Ça compte pour moi.",
         options: [
-          { text: "Moi. Tu as un seul interlocuteur, c'est moi.", score: 2, react: "Marc : « Excellent. C'est validé. Vas-y. »" },
-          { text: "On va co-piloter avec Sophie et Hugo, à 4 mains.", score: 0, react: "Marc : « Trop de chefs. Tu pilotes, point. »" },
-          { text: "On verra à mesure qui prend le lead naturellement.", score: -2, react: "Marc : « Pas d'engagement = pas de validation. »" },
-        ],
-      },
+          { text: "C'est moi qui te remercie. C'est précieux de pouvoir échanger comme ça avec toi.", score: 2, react: "Sophie : « À très vite alors. » (sourire chaleureux)" },
+          { text: "Bon, allez, faut que j'y aille, salut.", score: -2, react: "Sophie : « Ah... d'accord, à plus. » (déçue)" },
+          { text: "On fixe une deadline et on cale les KPIs vendredi.", score: -1, react: "Sophie : « D'accord. » (un peu froide)" },
+        ] },
     ],
   },
-  I: {
-    setting: "Tu retrouves Sophie (profil I), responsable marketing, en pause café. Elle sourit, t'attrape par l'épaule.",
+  tr: {
+    setting: "Tu retrouves Marc (Travaillomane), DAF, dans son bureau ordonné. Agenda papier ouvert, stylo bien aligné. Il regarde sa montre.",
     turns: [
-      {
-        bot: "Ooooh trop bien de te voir ! Faut absolument que je te raconte le truc de la semaine dernière 😆 Mais tu voulais me parler aussi ?",
+      { bot: "Bonjour. Je vous ai bloqué 30 minutes. Quel est l'ordre du jour exact ?",
         options: [
-          { text: "Bonjour, j'ai 3 sujets à traiter, premier sujet : le budget Q3.", score: -2, react: "Sophie : « Ah... ok... » (le sourire disparaît)" },
-          { text: "Carrément ! Raconte d'abord, après je te parle d'un projet qui va te plaire 😊", score: 2, react: "Sophie rit. « Trop bien ! Tu vas adorer mon histoire. »" },
-          { text: "Sophie, signe ce formulaire avant midi stp, c'est urgent.", score: -2, react: "Sophie soupire. « Tu pourrais au moins dire bonjour... »" },
-        ],
-      },
-      {
-        bot: "Bon alors, c'est quoi ton projet ? Vas-y, fais-moi rêver !",
+          { text: "Bonjour Marc. 3 points : (1) état du projet, (2) écart budget, (3) demande de validation. 10 min chacun, ça vous va ?", score: 2, react: "Marc note. « Parfait, structuré. On y va. »" },
+          { text: "Bonjour ! Comment ça va ? On va prendre les choses comme elles viennent.", score: -2, react: "Marc fronce les sourcils. « Non, ça ne marche pas comme ça. »" },
+          { text: "Salut, j'ai 10 idées dans la tête, on improvise !", score: -2, react: "Marc soupire visiblement. « C'est pas sérieux. »" },
+        ] },
+      { bot: "Point 1, l'état du projet. Vous avez vos chiffres ?",
         options: [
-          { text: "On lance une campagne créative sur TikTok, et je veux que TU sois la voix du projet. C'est ton univers, ça va cartonner.", score: 2, react: "Sophie : « Wow, j'adore ! Raconte-moi tout, j'ai déjà 10 idées qui me viennent ! »" },
-          { text: "Voici un document de 24 pages avec la stratégie détaillée, la matrice de risque et le rétroplanning Gantt.", score: -2, react: "Sophie : « Euh... tu me le résumes en 30 secondes ? »" },
-          { text: "C'est un projet standard de communication, rien d'extraordinaire mais il faut le faire.", score: -2, react: "Sophie : « Ah... bof alors. Je suis pas trop motivée. »" },
-        ],
-      },
-      {
-        bot: "Mais j'aurais carte blanche ? Parce que j'ai mille idées hein !",
+          { text: "Avancement 68%, conforme au planning. 3 jalons validés sur 4. Voici le tableau de bord page 2.", score: 2, react: "Marc parcourt. « Très bien, c'est clair. »" },
+          { text: "Ça avance bien je pense, on est dans les temps.", score: -2, react: "Marc : « 'Je pense' n'est pas un chiffre. »" },
+          { text: "Vous savez, on fait au mieux, l'équipe est super motivée.", score: -2, react: "Marc : « Je n'ai pas demandé l'humeur, j'ai demandé les chiffres. »" },
+        ] },
+      { bot: "Point 2, l'écart budget. Justifié comment ?",
         options: [
-          { text: "Cadre strict : tu suis le brief à la lettre, sans déviation.", score: -2, react: "Sophie se ferme. « Ah... ok... » (elle se désengage)" },
-          { text: "Carte blanche sur la créa, on cale juste 2-3 garde-fous ensemble pour que ça reste dans la cible.", score: 2, react: "Sophie : « Génial ! Et je peux proposer un format vidéo + influenceur ? J'ai un contact ! »" },
-          { text: "On en reparle plus tard, j'ai besoin que tu sois patiente.", score: -1, react: "Sophie : « Bon... ok mais je perds le momentum là... »" },
-        ],
-      },
-      {
-        bot: "Et qui va voir le résultat ? J'aimerais bien que ça se voie en interne !",
+          { text: "Écart de +4,2k€ sur le poste licences logicielles, lié à une option de sécurité ajoutée en avril (note de cadrage validée). Pas d'autre écart.", score: 2, react: "Marc : « Bien, c'est documenté. »" },
+          { text: "Il y a eu quelques imprévus, c'est normal sur un projet.", score: -2, react: "Marc : « Quels imprévus ? Quel montant ? Documenté ? »" },
+          { text: "On verra ça plus tard, on est juste un peu au-dessus.", score: -2, react: "Marc : « Non, on regarde maintenant. »" },
+        ] },
+      { bot: "Point 3, votre demande. Soyez précis.",
         options: [
-          { text: "Comité de direction + intervention de toi en plénière à la rentrée. Tu portes le projet.", score: 2, react: "Sophie rayonne. « Trop bien !! Je vais me préparer un truc qui claque ! »" },
-          { text: "Personne ne le saura, ça reste confidentiel.", score: -2, react: "Sophie : « Ah... bof. Sans visibilité, je vais avoir du mal à m'investir. »" },
-          { text: "Tu verras bien selon les KPIs.", score: -1, react: "Sophie : « Mouais, c'est un peu flou. »" },
-        ],
-      },
-      {
-        bot: "Trop hâte ! On commence quand ?",
+          { text: "Je sollicite votre validation pour passer à la phase 3. Coût phase 3 : 22k€, gain attendu : 60k€ sur 12 mois. ROI 4 mois. Document de validation préparé pour signature.", score: 2, react: "Marc lit, signe. « Parfait. Validé. »" },
+          { text: "J'aimerais qu'on signe vite, j'ai besoin d'aller plus loin.", score: -1, react: "Marc : « Précisez ce que vous voulez. »" },
+          { text: "Fais-moi confiance, c'est bon pour la boîte.", score: -2, react: "Marc : « La confiance se documente. »" },
+        ] },
+      { bot: "Bien. Bon travail. Tenez-moi informé toutes les 2 semaines avec un point standard.",
         options: [
-          { text: "Lundi, on fait un kick-off fun avec l'équipe, croissants et brainstorming ouvert. Tu animes ?", score: 2, react: "Sophie tape dans ses mains. « Yes ! Je m'occupe de tout, ça va être génial ! »" },
-          { text: "On démarre par 3 semaines de cadrage rédactionnel et de validation comité.", score: -2, react: "Sophie : « 3 semaines de paperasse... ok... »" },
-          { text: "Quand tu veux, je m'en occupe pas vraiment.", score: -1, react: "Sophie : « Tu te détaches déjà ? Bof... »" },
-        ],
-      },
+          { text: "Reçu. Vous aurez un point structuré tous les jeudis pairs à 14h. Bonne fin de journée.", score: 2, react: "Marc : « Excellent. À jeudi. »" },
+          { text: "OK je vous tiens au courant quand j'y pense.", score: -2, react: "Marc : « Non. Cadence fixe, c'est important. »" },
+          { text: "Bon, c'est cool, à plus !", score: -1, react: "Marc : « Restons professionnels. »" },
+        ] },
     ],
   },
-  S: {
-    setting: "Tu rejoins Hugo (profil S), chef de projet senior dans ton équipe depuis 8 ans, dans une petite salle calme. Il te sourit doucement.",
+  pe: {
+    setting: "Tu retrouves Pierre (Persévérant), chef de service depuis 20 ans, dans une salle de réunion. Posture droite, regard franc, photo de son équipe au mur.",
     turns: [
-      {
-        bot: "Bonjour, content de te voir. Tu m'as dit que c'était important ?",
+      { bot: "Bonjour. Vous vouliez me parler de la réorganisation. Je vous préviens, j'ai des positions claires.",
         options: [
-          { text: "Salut Hugo, oui — mais d'abord, tu as le temps là ? Sinon on peut décaler.", score: 2, react: "Hugo sourit. « C'est gentil de demander. Vas-y, j'ai bien 30 minutes. »" },
-          { text: "Hugo, on n'a pas le temps de papoter, j'ai un truc gros à t'annoncer.", score: -2, react: "Hugo se tend légèrement. « Ah... d'accord... »" },
-          { text: "Hugo, c'est une opportunité monumentale, fais-moi confiance, fonce !", score: -2, react: "Hugo se referme. « Attends, attends, c'est quoi ? »" },
-        ],
-      },
-      {
-        bot: "Je t'écoute, tu peux y aller.",
+          { text: "Bonjour Pierre. C'est précisément parce que vos positions comptent que je voulais commencer par votre point de vue. Que pensez-vous, vous, de la situation ?", score: 2, react: "Pierre se détend. « Merci de me poser la question. »" },
+          { text: "Bonjour, j'ai pris ma décision, je viens vous l'annoncer.", score: -2, react: "Pierre se raidit. « Vous ne m'avez pas consulté. »" },
+          { text: "Salut Pierre, on va faire un truc fun pour décider !", score: -2, react: "Pierre, glacial : « Ce n'est pas un sujet pour s'amuser. »" },
+        ] },
+      { bot: "Pour moi, on ne respecte pas l'engagement qualité qu'on a pris envers nos clients historiques. C'est grave.",
         options: [
-          { text: "L'équipe va être réorganisée. Je voudrais d'abord avoir ton ressenti et voir comment on accompagne ça ensemble, sereinement.", score: 2, react: "Hugo : « Merci de me prévenir tôt, ça compte pour moi. Raconte. »" },
-          { text: "L'équipe va être réorganisée. C'est acté, c'est lundi.", score: -2, react: "Hugo, voix tendue : « Ah... ok. Je découvre. »" },
-          { text: "L'équipe va exploser ! Nouveau monde, nouveau départ, super excitant !", score: -2, react: "Hugo : « Je ne sais pas si c'est si excitant que ça pour moi... »" },
-        ],
-      },
-      {
-        bot: "Ça veut dire quoi pour moi concrètement ? Je vais perdre mes coéquipiers ?",
+          { text: "Je comprends votre point. La qualité envers les clients historiques est un principe que je partage. Pouvez-vous me dire précisément où vous voyez la rupture ?", score: 2, react: "Pierre : « Enfin quelqu'un qui écoute. Voilà... »" },
+          { text: "Pierre, vous exagérez, c'est pas si grave.", score: -2, react: "Pierre, ferme : « Je n'exagère pas. C'est une question de principe. »" },
+          { text: "Bah les principes, dans le business, faut être pragmatique.", score: -2, react: "Pierre, choqué : « C'est dur de vous entendre dire ça. »" },
+        ] },
+      { bot: "Et puis, si je dis oui à ça, je perds en cohérence avec ce que je défends depuis 10 ans.",
         options: [
-          { text: "Tu gardes 80% de ton équipe actuelle, tu accueilles 2 personnes que tu connais déjà, et on prend 4 semaines de transition.", score: 2, react: "Hugo respire. « Ok, ça me rassure. On va y arriver. »" },
-          { text: "Tu verras à l'usage, on s'adaptera.", score: -2, react: "Hugo, anxieux : « C'est très flou ce que tu me dis... »" },
-          { text: "C'est pas important, l'essentiel c'est l'objectif business.", score: -2, react: "Hugo, blessé : « Pour moi si, c'est important. »" },
-        ],
-      },
-      {
-        bot: "Et si certains de mes collègues ne sont pas d'accord ?",
+          { text: "Votre cohérence est précisément ce qui fait votre crédibilité, et j'y tiens autant que vous. Et si on cherchait ensemble une voie qui respecte vos engagements ?", score: 2, react: "Pierre acquiesce. « Là on parle. »" },
+          { text: "On s'en fiche de la cohérence, le monde change.", score: -2, react: "Pierre, blessé : « Pas pour moi. »" },
+          { text: "Faut savoir évoluer, soyez moderne.", score: -2, react: "Pierre se ferme totalement." },
+        ] },
+      { bot: "Concrètement, qu'est-ce que vous me proposez ?",
         options: [
-          { text: "On organise un échange collectif jeudi prochain, chacun pourra s'exprimer, et toi tu seras un relai privilégié.", score: 2, react: "Hugo : « C'est exactement ce qu'il faut. Merci. »" },
-          { text: "Tant pis, ils s'adapteront ou ils partiront.", score: -2, react: "Hugo, choqué : « Mais on ne peut pas dire ça... »" },
-          { text: "On les recadrera s'il y a des résistances.", score: -2, react: "Hugo : « Je préfère qu'on les écoute, pas qu'on les recadre. »" },
-        ],
-      },
-      {
-        bot: "Bon, je vais y réfléchir. Tu me laisses quelques jours ?",
+          { text: "Je propose qu'on ajoute une clause de qualité renforcée pour les clients historiques, et que vous portiez personnellement ce volet. Votre voix sur ce point compte.", score: 2, react: "Pierre : « Voilà, ça c'est juste. Je veux bien. »" },
+          { text: "On verra ça en s'adaptant au fil de l'eau.", score: -1, react: "Pierre : « 'Au fil de l'eau' n'est pas une garantie. »" },
+          { text: "On fait comme prévu, point.", score: -2, react: "Pierre : « Alors je ne vous suis pas. »" },
+        ] },
+      { bot: "Merci. Au moins on s'est parlé sérieusement.",
         options: [
-          { text: "Bien sûr, prends le temps. On en reparle quand tu veux, sans pression.", score: 2, react: "Hugo sourit franchement. « Merci. Je te reviens jeudi. »" },
-          { text: "J'ai besoin d'une réponse demain matin sinon je passe à autre chose.", score: -2, react: "Hugo : « Avec cette pression, ça va être difficile... »" },
-          { text: "Non, décide maintenant.", score: -2, react: "Hugo se fige et n'ose plus parler." },
-        ],
-      },
+          { text: "Merci à vous d'avoir partagé vos convictions. C'est ce qui fait avancer les choses sainement.", score: 2, react: "Pierre, satisfait : « Très bien. À bientôt. »" },
+          { text: "Cool, salut !", score: -1, react: "Pierre : « ... » (un peu déçu du ton léger)" },
+          { text: "Bon, j'espère que vous allez signer rapidement maintenant.", score: -2, react: "Pierre : « Je signerai quand je serai convaincu, pas avant. »" },
+        ] },
     ],
   },
-  C: {
-    setting: "Tu présentes une proposition à Claire (profil C), CFO. Elle est devant son écran, lunettes sur le nez, à lire le document que tu lui as envoyé hier.",
+  rv: {
+    setting: "Tu retrouves Anna (Rêveuse) dans une petite salle calme. Elle est assise, regarde par la fenêtre. Parle peu.",
     turns: [
-      {
-        bot: "Bonjour. J'ai parcouru votre note. Avant de commencer, sur quelle hypothèse repose le scénario central ?",
+      { bot: "...bonjour.",
         options: [
-          { text: "Hypothèse centrale : croissance du marché à 4,2% par an (source INSEE 2025), part de marché stable à 12%. Voici la fiche.", score: 2, react: "Claire hoche la tête. « Bien. Source citée, c'est rigoureux. »" },
-          { text: "On est plutôt optimistes, je le sens bien sur ce marché.", score: -2, react: "Claire lève un sourcil. « Le 'sentiment' n'est pas une hypothèse de modèle. »" },
-          { text: "On a regardé en gros, ça devrait passer.", score: -2, react: "Claire pose ses lunettes. « 'En gros' n'est pas suffisant ici. »" },
-        ],
-      },
-      {
-        bot: "Quelle est la sensibilité du résultat à une variation de -10% du chiffre d'affaires ?",
+          { text: "Bonjour Anna. Merci de prendre ce temps. J'ai un sujet à te confier — prends ton temps pour m'écouter, pas besoin de répondre tout de suite.", score: 2, react: "Anna acquiesce doucement. « D'accord. »" },
+          { text: "Salut !! Trop bien que tu sois là !! Alors on attaque ??", score: -2, react: "Anna se contracte légèrement et regarde par la fenêtre." },
+          { text: "Anna, j'ai 12 points à voir avec toi, on commence ?", score: -2, react: "Anna, fatiguée : « ... » (déjà submergée)" },
+        ] },
+      { bot: "(silence) ... vous m'écoutez.",
         options: [
-          { text: "À -10% de CA, la marge passe de 18% à 11%, le point mort recule de 4 mois. Tableau de sensibilité page 7.", score: 2, react: "Claire : « Parfait, c'est exactement ce que je voulais voir. »" },
-          { text: "On n'a pas calculé, mais ça devrait aller.", score: -2, react: "Claire : « Pas calculé ? Comment voulez-vous que je valide ? »" },
-          { text: "Ça dépend, c'est compliqué à dire.", score: -1, react: "Claire : « Tout est calculable. Calculez-le et revenez. »" },
-        ],
-      },
-      {
-        bot: "Et la méthodologie de calcul du ROI, vous l'avez comparée à d'autres approches ?",
+          { text: "Je te demande de prendre en charge l'analyse du dossier X. Tu auras 3 semaines, accès à toutes les données, et personne ne t'interrompra. Tu peux me rendre un rapport écrit.", score: 2, react: "Anna : « D'accord. Ça me convient. »" },
+          { text: "On pourrait peut-être faire un brainstorming d'équipe pour décider ?", score: -2, react: "Anna : « Si vous voulez... » (visiblement réticente)" },
+          { text: "Qu'est-ce que tu en penses spontanément, là, tout de suite ?", score: -2, react: "Anna : « Je... je ne sais pas. » (paralysée)" },
+        ] },
+      { bot: "...d'accord. Vous voulez quoi exactement comme livrable ?",
         options: [
-          { text: "Oui : VAN, TRI et payback comparés. Le payback actualisé est l'indicateur retenu car il intègre le coût du capital. Annexe 3.", score: 2, react: "Claire sourit légèrement. « Très bien. C'est cohérent. »" },
-          { text: "On a pris la méthode la plus simple.", score: -1, react: "Claire : « La plus simple n'est pas toujours la plus juste. Justifiez. »" },
-          { text: "C'est la méthode que tout le monde utilise.", score: -2, react: "Claire : « Argument d'autorité. Je veux du raisonnement. »" },
-        ],
-      },
-      {
-        bot: "Je vois page 12 une approximation. Pourriez-vous m'expliquer ?",
+          { text: "Un document écrit de 5 à 10 pages : synthèse, analyse, recommandation. Format à ta main, sur 3 semaines.", score: 2, react: "Anna : « Bien. Je vais y réfléchir. »" },
+          { text: "Surprends-moi, fais comme tu le sens !", score: -1, react: "Anna : « ... je préférerais que vous me disiez. »" },
+          { text: "Présente-le devant le comité en réunion ouverte.", score: -2, react: "Anna pâlit. « Présenter ?? Devant tout le monde ?? »" },
+        ] },
+      { bot: "(silence prolongé)",
         options: [
-          { text: "Oui, c'est un arrondi à 5% près sur le coût logistique, lié à la fourchette du devis fournisseur. J'ai indiqué la borne haute et basse en note de bas de page.", score: 2, react: "Claire : « Très bien, vous avez documenté l'incertitude. »" },
-          { text: "Ah ça ? C'est une estimation rapide, on précisera plus tard.", score: -2, react: "Claire : « 'Plus tard' = pas maintenant = pas validé. »" },
-          { text: "Je ne sais pas, c'est mon équipe qui l'a fait.", score: -2, react: "Claire : « Vous présentez, vous devez maîtriser. »" },
-        ],
-      },
-      {
-        bot: "Bien. Je vais relire à tête reposée et vous reviens d'ici 48h avec mes éventuelles questions.",
+          { text: "Je te laisse respirer avec ça. Si tu as besoin de précisions, écris-moi quand tu veux. Pas d'urgence.", score: 2, react: "Anna, soulagée : « Merci. »" },
+          { text: "Alors, t'es d'accord ou pas ? Je dois savoir maintenant.", score: -2, react: "Anna se fige. « ... » (paralysie)" },
+          { text: "Allez, parle, fais un effort !", score: -2, react: "Anna se ferme totalement." },
+        ] },
+      { bot: "Merci. Je commence dès lundi.",
         options: [
-          { text: "Parfait. Je vous envoie en parallèle l'annexe technique mise à jour ce soir. À votre disposition pour toute question.", score: 2, react: "Claire : « Excellent. Je note. Travail soigné. »" },
-          { text: "On peut signer maintenant ? Pour gagner du temps.", score: -2, react: "Claire : « Hors de question avant ma relecture. »" },
-          { text: "Faites confiance à l'équipe, on s'en occupe.", score: -2, react: "Claire : « Mon travail n'est pas de faire confiance, c'est de vérifier. »" },
-        ],
-      },
+          { text: "Parfait. Je te laisse l'espace dont tu as besoin. À dans 3 semaines, et bonne réflexion.", score: 2, react: "Anna sourit légèrement. « Merci. »" },
+          { text: "Bon, je passe te voir tous les jours pour le suivi !", score: -2, react: "Anna : « Ah... » (anxieuse)" },
+          { text: "On s'appelle demain matin pour faire un premier point ?", score: -1, react: "Anna : « ... ça pourrait attendre une semaine ? »" },
+        ] },
+    ],
+  },
+  rb: {
+    setting: "Tu retrouves Manu (Rebelle), créatif d'agence, dans la salle de pause. T-shirt à motifs, sneakers, il rit avec un collègue en mangeant un cookie.",
+    turns: [
+      { bot: "Yo !! Trop bien que tu passes ! T'as vu le mail du boss, c'est ÉNORME comme connerie 😂 Tu veux un cookie ?",
+        options: [
+          { text: "Yoo Manu ! Carrément, file-moi le cookie. Et ouais le mail c'est niveau légendaire 😂 J'ai un truc fun à te proposer, t'es chaud ?", score: 2, react: "Manu : « VAS-Y BALANCE !! »" },
+          { text: "Bonjour Manuel. J'ai préparé un brief structuré que j'aimerais te présenter.", score: -2, react: "Manu, bof : « Heuu ok. » (il s'éteint)" },
+          { text: "Manu, restons concentrés sur le travail.", score: -2, react: "Manu lève les yeux au ciel. « OK monsieur le sérieux... »" },
+        ] },
+      { bot: "Vas-y !!! C'est quoi le délire ?",
+        options: [
+          { text: "On lance une campagne complètement décalée pour un client coincé. Mission : leur faire péter les codes. Tu veux mener la créa ?", score: 2, react: "Manu : « MAIS OUI carrément !! J'ai déjà 5 idées qui me viennent !! »" },
+          { text: "C'est une campagne standard, conforme au cahier des charges du client. Tu suis le brief.", score: -2, react: "Manu : « Pfff bof, c'est mort. »" },
+          { text: "J'ai besoin d'une analyse rigoureuse du marché avant qu'on commence.", score: -2, react: "Manu : « Bah envoie-moi le data analyst, c'est pas mon truc. »" },
+        ] },
+      { bot: "Mais j'aurais carte blanche hein ?? Sinon ça m'éclate pas !",
+        options: [
+          { text: "Carte blanche à 90%. Les 10% restants, on s'amuse à les contourner ensemble. Deal ?", score: 2, react: "Manu : « DEAL ! Tope là 🤝 »" },
+          { text: "Non, tu suis le process exactement, on a une norme qualité.", score: -2, react: "Manu : « Aaah le process tue tout, je passe. »" },
+          { text: "On verra à l'usage, on définira au fur et à mesure.", score: -1, react: "Manu : « Mouais, c'est flou ton truc. »" },
+        ] },
+      { bot: "Et si je propose un truc complètement WTF, vous allez pas me censurer ?",
+        options: [
+          { text: "Plus c'est WTF, plus j'adore. On fixe juste 1 règle : pas d'attaque perso ni de truc illégal. Sinon : LÂCHE-TOI.", score: 2, react: "Manu, surexcité : « Ohhhh ça va être ÉPIQUE !! »" },
+          { text: "On censurera ce qui sort du cadre corporate.", score: -2, react: "Manu : « Bon bah salut. »" },
+          { text: "Tu sais que tu dois respecter la charte éthique de l'entreprise ?", score: -1, react: "Manu : « Ouais ouais... » (il décroche)" },
+        ] },
+      { bot: "OK je suis À FOND ! On commence quand ?",
+        options: [
+          { text: "Lundi 10h, kick-off avec croissants et musique. Tu te ramènes avec tes idées les plus folles. Tope là.", score: 2, react: "Manu : « LET'S GOOO !! 🎉 »" },
+          { text: "Mardi 9h, en salle de réunion fermée, avec présentation PowerPoint en 17 slides.", score: -2, react: "Manu : « J'ai mal au crâne déjà. »" },
+          { text: "Quand on aura validé toutes les étapes du process amont.", score: -2, react: "Manu : « ... je vais aller boire un café. » (il décroche)" },
+        ] },
+    ],
+  },
+  pr: {
+    setting: "Tu retrouves Nico (Promoteur), entrepreneur, dans un café. Il regarde son téléphone, costume sans cravate, montre voyante.",
+    turns: [
+      { bot: "Salut. T'as 10 minutes. Vas-y.",
+        options: [
+          { text: "Salut Nico. J'ai un deal pour toi : tu mets 50k€, tu en sors 200k€ dans 8 mois. Tu veux que je détaille ?", score: 2, react: "Nico relève la tête. « Tu m'intéresses. Détaille. »" },
+          { text: "Salut Nico, comment vas-tu aujourd'hui ? Ta famille ?", score: -2, react: "Nico, sec : « Au sujet. »" },
+          { text: "J'ai préparé un dossier complet de 18 pages, je te le lis ?", score: -2, react: "Nico : « Non. T'as 30 secondes pour le pitch. »" },
+        ] },
+      { bot: "Le risque ? Concret.",
+        options: [
+          { text: "Risque max : -15k€ couverts par garantie. Risque résiduel : tu gardes la techno développée. Pas de perte sèche supérieure à 15k€.", score: 2, react: "Nico hoche. « Carré. »" },
+          { text: "C'est du business, y'a toujours un risque, on verra...", score: -2, react: "Nico : « Faux. Précise. »" },
+          { text: "Le risque émotionnel pour l'équipe est limité.", score: -2, react: "Nico : « M'en fous. Chiffre. »" },
+        ] },
+      { bot: "T'es prêt à signer maintenant ?",
+        options: [
+          { text: "Oui. J'ai le contrat ici, on peut signer dans 10 min. Take it or leave it.", score: 2, react: "Nico sourit. « Là tu me plais. »" },
+          { text: "Il faut que j'en parle à mon équipe avant.", score: -1, react: "Nico : « Tu décides ou pas ? »" },
+          { text: "On peut prendre quelques semaines pour réfléchir au mieux.", score: -2, react: "Nico : « Suivant. » (il regarde son téléphone)" },
+        ] },
+      { bot: "Et toi t'apportes quoi ?",
+        options: [
+          { text: "Je porte le risque opérationnel, je m'engage personnellement sur le livrable, et je te garantis l'exclusivité 12 mois. Mon nom sur le deal.", score: 2, react: "Nico : « OK, t'as du cran. J'aime. »" },
+          { text: "Je vais faire de mon mieux et bien préparer le truc.", score: -2, react: "Nico : « 'De mon mieux' = rien. Engage-toi. »" },
+          { text: "Mon équipe est très compétente et motivée.", score: -2, react: "Nico : « TON engagement à TOI ? »" },
+        ] },
+      { bot: "Deal. On signe.",
+        options: [
+          { text: "Deal. (signature) Bienvenue dans l'aventure. Premier point dans 30 jours, résultats concrets sur la table.", score: 2, react: "Nico : « Parfait. On va se marrer. »" },
+          { text: "Génial ! On va prendre le temps de bien lancer ça calmement.", score: -1, react: "Nico : « Calmement = lentement. Non. »" },
+          { text: "Merci beaucoup, j'espère ne pas vous décevoir.", score: -2, react: "Nico : « Espérer ? Tu vas livrer. Point. »" },
+        ] },
     ],
   },
 };
@@ -1064,11 +1287,11 @@ function renderChat() {
     card.innerHTML = `
       <h3>Choisis ton interlocuteur</h3>
       <div class="grid" style="margin-top:1rem">
-        ${["D","I","S","C"].map(k => `
+        ${order.map(k => `
           <div class="profile-card ${k}" style="cursor:pointer" data-c="${k}">
-            <span class="badge ${k}">${k}</span>
-            <h3>${profiles[k].name}</h3>
-            <p>${chatScenarios[k].setting.substring(0, 80)}...</p>
+            <span class="badge ${k}">${profiles[k].name.toUpperCase()}</span>
+            <h3>${profiles[k].nick}</h3>
+            <p>${chatScenarios[k].setting.substring(0, 90)}…</p>
           </div>
         `).join("")}
       </div>
@@ -1088,31 +1311,31 @@ function renderChat() {
   const turn = scn.turns[chatTurn];
 
   if (!turn) {
-    const verdict = chatRapport >= 80 ? "Excellente connexion ! Tu as parfaitement adapté ton style." :
-                    chatRapport >= 60 ? "Bon rapport. Quelques choix sont à affiner mais tu es sur la bonne voie." :
-                    chatRapport >= 40 ? "Mitigé. Tu as dévié plusieurs fois du style attendu." :
-                    "Rapport rompu. Relis le module 1 sur ce profil et recommence.";
+    const verdict = chatRapport >= 85 ? "Excellente connexion ! Tu es resté(e) dans le canal préféré et tu as nourri les besoins psychologiques." :
+                    chatRapport >= 65 ? "Bon rapport. Quelques choix sont à affiner, mais tu sens la dynamique du type." :
+                    chatRapport >= 40 ? "Mitigé. Tu as dévié du canal préféré plusieurs fois. Revois le module 1 sur ce type." :
+                    "Rupture de communication. Le canal et les besoins n'ont pas été respectés. Reprends depuis le module 1.";
     card.innerHTML = `
       <h3>Conversation terminée</h3>
       <p style="color:var(--text)">Niveau de rapport final : <strong>${chatRapport} / 100</strong></p>
       <div class="progress"><div class="progress-bar" style="width:${Math.max(0, chatRapport)}%"></div></div>
-      <div class="feedback ${chatRapport >= 60 ? 'ok' : 'ko'}" style="margin-top:1rem"><strong>Bilan</strong>${verdict}</div>
+      <div class="feedback ${chatRapport >= 65 ? 'ok' : 'ko'}" style="margin-top:1rem"><strong>Bilan</strong>${verdict}</div>
       <div class="actions">
-        <button onclick="chatProfile=null;renderChat()">Choisir un autre profil</button>
-        <button onclick="chatTurn=0;chatRapport=50;renderChat()">Rejouer ce profil</button>
+        <button onclick="chatProfile=null;renderChat()">Choisir un autre type</button>
+        <button onclick="chatTurn=0;chatRapport=50;renderChat()">Rejouer ce type</button>
       </div>
     `;
     return;
   }
 
   card.innerHTML = `
-    <p style="color:var(--muted);font-size:.9rem">${chatTurn === 0 ? scn.setting : ''}</p>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <span><span class="badge ${chatProfile}">${chatProfile}</span> <strong>${profiles[chatProfile].name}</strong> · Tour ${chatTurn + 1} / ${scn.turns.length}</span>
+    ${chatTurn === 0 ? `<p style="color:var(--muted);font-size:.9rem">${scn.setting}</p>` : ''}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+      <span><span class="badge ${chatProfile}">${profiles[chatProfile].name.toUpperCase()}</span> · Tour ${chatTurn + 1} / ${scn.turns.length}</span>
       <span>Rapport : <strong>${chatRapport}</strong> / 100</span>
     </div>
     <div class="progress" style="margin-bottom:1rem"><div class="progress-bar" style="width:${Math.max(0, chatRapport)}%"></div></div>
-    <div class="scenario-text" style="border-left-color:${profiles[chatProfile].color}">${profiles[chatProfile].name.charAt(0)}. — « ${turn.bot} »</div>
+    <div class="scenario-text" style="border-left-color:${profiles[chatProfile].color}">${profiles[chatProfile].nick} — « ${turn.bot} »</div>
     <p style="color:var(--text)"><strong>Ta réponse :</strong></p>
     <div class="options">
       ${turn.options.map((o, i) => `<button data-i="${i}">${o.text}</button>`).join("")}
@@ -1139,111 +1362,130 @@ function renderChat() {
   });
 }
 
-/* ============== MODULE 7 : ALLER PLUS LOIN ============== */
+/* ============================================================
+   MODULE 7 : STRESS, DRIVERS, PASSERELLES
+   ============================================================ */
 
-const pcm = {
-  Empathique: { color: "#e91e63", needs: "Reconnaissance en tant que personne, sensoriel", canal: "Émotion, chaleur", strength: "Compassion, attention aux autres", stress: "Survalorise, doute de soi" },
-  Travaillomane: { color: "#3f51b5", needs: "Reconnaissance du travail, structure du temps", canal: "Information, logique", strength: "Logique, responsable, organisé", stress: "Sur-contrôle, attaque les autres sur leurs idées" },
-  Persévérant: { color: "#009688", needs: "Reconnaissance des opinions, des convictions", canal: "Information, opinions", strength: "Engagé, observateur, consciencieux", stress: "Croisade, perd la nuance" },
-  Rêveur: { color: "#9c27b0", needs: "Solitude, espace, temps de réflexion", canal: "Directif bienveillant", strength: "Imaginatif, calme, réfléchi", stress: "Se retire, devient passif" },
-  Rebelle: { color: "#ff9800", needs: "Contact ludique, fun", canal: "Émotion, jeu", strength: "Spontané, créatif, ludique", stress: "Blâme, ronchonne, sabote" },
-  Promoteur: { color: "#f44336", needs: "Excitation, action, défi", canal: "Directif", strength: "Adaptable, charmeur, persuasif", stress: "Manipule, prend des risques inutiles" },
+const stressData = {
+  em: {
+    deg1: "Sur-adaptation : cherche à plaire à tout prix, doute de lui-même, s'efface. Driver : « Fais plaisir ».",
+    deg2: "Se dévalorise : « je n'y arriverai jamais », fait des erreurs « bêtes », invite la critique.",
+    deg3: "Se sent rejeté, dépressif, peut s'isoler ou tomber malade. Voit le monde comme hostile.",
+    fuel: "Une marque de reconnaissance sincère et chaleureuse (« je suis content(e) que tu sois là »), un geste sensoriel attentionné."
+  },
+  tr: {
+    deg1: "Sur-contrôle : tout vérifier deux fois, ne plus déléguer, perfectionnisme. Driver : « Sois parfait ».",
+    deg2: "Attaque les autres sur leur logique : « tu n'as pas pensé à... », « c'est pas précis ». Devient cassant.",
+    deg3: "Surchauffe, burn-out logique, rejette tout le monde car « personne n'est à la hauteur ».",
+    fuel: "Une reconnaissance précise du travail accompli (« ton analyse page 3 est solide ») + un cadre temporel clair."
+  },
+  pe: {
+    deg1: "Focus sur ce qui cloche, perd la nuance, devient critique. Driver : « Sois parfait (pour les autres) ».",
+    deg2: "Croisade : attaque les valeurs des autres, fait la leçon, devient rigide et moralisateur.",
+    deg3: "Se sent abandonné, désespéré (« plus personne ne défend les valeurs »), peut se replier.",
+    fuel: "Demander son opinion sur un sujet de fond, reconnaître explicitement une de ses convictions."
+  },
+  rv: {
+    deg1: "Se retire, attend qu'on lui dise. Driver : « Sois fort » ou « Fais des efforts ».",
+    deg2: "Passif : ne fait rien, oublie, semble absent. Ne demande pas d'aide.",
+    deg3: "Disparaît mentalement, semble perdu, désorganisé. Peut s'épuiser en silence.",
+    fuel: "Un cadre clair et bienveillant (« voici ce que je te demande »), du temps seul, peu de sollicitations parallèles."
+  },
+  rb: {
+    deg1: "Ronchonne, blâme, « c'est pas ma faute ». Driver : « Fais des efforts ».",
+    deg2: "Sabotage léger, oublis volontaires, conteste tout, devient désagréable.",
+    deg3: "Reproche aux autres ce qu'il ne fait pas lui-même, s'oppose à tout, peut quitter.",
+    fuel: "Un moment ludique, une surprise, un challenge fun, le droit de râler avec humour."
+  },
+  pr: {
+    deg1: "Attend que les autres se débrouillent (« faut bien que ça craque »), prend des risques. Driver : « Sois fort ».",
+    deg2: "Manipule : utilise les autres pour ses fins, recherche de l'intensité par les conflits.",
+    deg3: "Abandonne ce qui ne marche pas, blâme les autres, peut « brûler » un environnement avant de partir.",
+    fuel: "Un challenge clair avec un enjeu réel, de l'action immédiate, une victoire visible."
+  }
 };
 
-function renderPCM() {
-  document.getElementById("pcm-grid").innerHTML = Object.entries(pcm).map(([name, p]) => `
-    <div class="profile-card" style="border-top-color:${p.color}">
-      <h3 style="color:${p.color}">${name}</h3>
-      <p><strong>Besoin :</strong> <span style="color:var(--text)">${p.needs}</span></p>
-      <p><strong>Canal :</strong> <span style="color:var(--text)">${p.canal}</span></p>
-      <p><strong>Force :</strong> <span style="color:var(--text)">${p.strength}</span></p>
-      <p><strong>Sous stress :</strong> <span style="color:var(--text)">${p.stress}</span></p>
-    </div>
-  `).join("");
-}
-
-const mbtiAxes = [
-  { letter: "E / I", title: "Extraversion / Introversion", desc: "Où l'énergie est puisée : monde extérieur (E) vs monde intérieur (I)." },
-  { letter: "S / N", title: "Sensation / iNtuition", desc: "Perception : faits concrets (S) vs idées et possibilités (N)." },
-  { letter: "T / F", title: "Thinking / Feeling", desc: "Décision : logique (T) vs valeurs et harmonie (F)." },
-  { letter: "J / P", title: "Judging / Perceiving", desc: "Style de vie : planifié (J) vs spontané (P)." },
-];
-
-const mbtiTypes = [
-  { code: "INTJ", nick: "L'Architecte", profile: "Stratégique, indépendant, vision long terme" },
-  { code: "INTP", nick: "Le Logicien", profile: "Analytique, curieux, théoricien" },
-  { code: "ENTJ", nick: "Le Commandant", profile: "Leader décidé, ambitieux, efficace" },
-  { code: "ENTP", nick: "L'Innovateur", profile: "Provocateur d'idées, débatteur, créatif" },
-  { code: "INFJ", nick: "L'Avocat", profile: "Idéaliste, perspicace, déterminé" },
-  { code: "INFP", nick: "Le Médiateur", profile: "Idéaliste, créatif, attaché aux valeurs" },
-  { code: "ENFJ", nick: "Le Protagoniste", profile: "Charismatique, inspirant, à l'écoute" },
-  { code: "ENFP", nick: "L'Inspirateur", profile: "Enthousiaste, imaginatif, sociable" },
-  { code: "ISTJ", nick: "Le Logisticien", profile: "Méthodique, fiable, factuel" },
-  { code: "ISFJ", nick: "Le Défenseur", profile: "Dévoué, attentionné, fidèle" },
-  { code: "ESTJ", nick: "Le Directeur", profile: "Organisé, traditionnel, gestionnaire" },
-  { code: "ESFJ", nick: "Le Consul", profile: "Sociable, attentionné, sens du devoir" },
-  { code: "ISTP", nick: "Le Virtuose", profile: "Pragmatique, audacieux, bricoleur" },
-  { code: "ISFP", nick: "L'Aventurier", profile: "Sensible, artiste, dans l'instant" },
-  { code: "ESTP", nick: "L'Entrepreneur", profile: "Énergique, perspicace, opportuniste" },
-  { code: "ESFP", nick: "L'Amuseur", profile: "Spontané, sociable, dans l'action" },
-];
-
-function renderMBTI() {
-  document.getElementById("mbti-axes").innerHTML = mbtiAxes.map(a => `
-    <div class="profile-card" style="border-top-color:var(--c)">
-      <span class="badge" style="background:var(--c);color:white">${a.letter}</span>
-      <h3>${a.title}</h3>
-      <p>${a.desc}</p>
-    </div>
-  `).join("");
-  document.getElementById("mbti-types").innerHTML = `
-    <h3 style="margin-top:1.5rem">Les 16 types en un coup d'œil</h3>
-    <div class="grid">
-      ${mbtiTypes.map(t => `
-        <div style="background:var(--soft);padding:.8rem;border-radius:8px">
-          <strong style="font-family:monospace;color:var(--c)">${t.code}</strong>
-          <strong style="display:block">${t.nick}</strong>
-          <span style="color:var(--muted);font-size:.9rem">${t.profile}</span>
+function renderStress() {
+  const root = document.getElementById("stress-section");
+  root.innerHTML = order.map(k => {
+    const s = stressData[k];
+    return `
+      <div style="margin-top:1.5rem;padding:1rem;background:var(--soft);border-radius:8px;border-left:5px solid ${profiles[k].color === 'var(--em)' ? '#e91e63' : profiles[k].color === 'var(--tr)' ? '#3f51b5' : profiles[k].color === 'var(--pe)' ? '#009688' : profiles[k].color === 'var(--rv)' ? '#9c27b0' : profiles[k].color === 'var(--rb)' ? '#ff9800' : '#f44336'}">
+        <h3><span class="badge ${k}">${profiles[k].name.toUpperCase()}</span> ${profiles[k].nick}</h3>
+        <div class="stress-grid">
+          <div class="stress-cell deg1"><h5>1er degré</h5><span style="color:var(--text)">${s.deg1}</span></div>
+          <div class="stress-cell deg2"><h5>2e degré</h5><span style="color:var(--text)">${s.deg2}</span></div>
+          <div class="stress-cell deg3"><h5>3e degré</h5><span style="color:var(--text)">${s.deg3}</span></div>
         </div>
-      `).join("")}
-    </div>
-  `;
+        <p style="margin-top:.8rem"><strong style="color:var(--ok)">Carburant pour sortir du stress :</strong> <span style="color:var(--text)">${s.fuel}</span></p>
+      </div>
+    `;
+  }).join("");
 }
 
-const crossMap = [
-  { disc: "D", pcm: "Promoteur", mbti: "ESTJ / ENTJ", traits: "Action, défi, contrôle, résultat" },
-  { disc: "I", pcm: "Rebelle / Empathique", mbti: "ENFP / ESFP", traits: "Émotion, relation, créativité" },
-  { disc: "S", pcm: "Empathique / Rêveur", mbti: "ISFJ / INFP", traits: "Harmonie, stabilité, écoute" },
-  { disc: "C", pcm: "Travaillomane / Persévérant", mbti: "INTJ / ISTJ", traits: "Logique, rigueur, méthode" },
+const drivers = [
+  { name: "Sois parfait", who: "Travaillomane, Persévérant", signs: "Cherche le détail parfait, refuse d'être pris en défaut, longues vérifications.", antidote: "« Tu as le droit d'être OK même imparfait. »" },
+  { name: "Fais plaisir", who: "Empathique", signs: "Sourit en disant oui à tout, mais s'épuise. Anticipe les attentes des autres.", antidote: "« Tes besoins comptent autant que ceux des autres. »" },
+  { name: "Sois fort", who: "Rêveur, Promoteur", signs: "Ne demande pas d'aide, encaisse, ne montre pas la faiblesse.", antidote: "« Tu as le droit de demander, d'avoir besoin. »" },
+  { name: "Fais des efforts", who: "Rebelle, Rêveur (variant)", signs: "S'agite pour montrer qu'il travaille, mais sans aboutir. Procrastine.", antidote: "« Tu as le droit de réussir simplement. »" },
+  { name: "Dépêche-toi", who: "Tous, mais surtout sous pression", signs: "Parle vite, fait plusieurs choses, finit les phrases des autres.", antidote: "« Tu as le droit de prendre ton temps. »" },
 ];
 
-function renderCross() {
-  document.getElementById("cross-table").innerHTML = `
-    <table style="width:100%;border-collapse:collapse;margin-top:1rem">
+function renderDrivers() {
+  const root = document.getElementById("drivers-section");
+  root.innerHTML = `
+    <table class="pcm-table">
       <thead>
-        <tr style="background:var(--soft)">
-          <th style="padding:.8rem;text-align:left">DISC</th>
-          <th style="padding:.8rem;text-align:left">PCM</th>
-          <th style="padding:.8rem;text-align:left">MBTI (typiques)</th>
-          <th style="padding:.8rem;text-align:left">Traits communs</th>
-        </tr>
+        <tr><th>Driver</th><th>Type principal</th><th>Signes</th><th>Antidote</th></tr>
       </thead>
       <tbody>
-        ${crossMap.map(r => `
-          <tr style="border-bottom:1px solid var(--soft)">
-            <td style="padding:.8rem"><span class="badge ${r.disc}">${r.disc}</span> ${profiles[r.disc].name}</td>
-            <td style="padding:.8rem;color:var(--text)">${r.pcm}</td>
-            <td style="padding:.8rem;color:var(--text);font-family:monospace">${r.mbti}</td>
-            <td style="padding:.8rem;color:var(--muted)">${r.traits}</td>
+        ${drivers.map(d => `
+          <tr>
+            <td><strong>« ${d.name} »</strong></td>
+            <td>${d.who}</td>
+            <td>${d.signs}</td>
+            <td><em>${d.antidote}</em></td>
           </tr>
         `).join("")}
       </tbody>
     </table>
-    <p style="margin-top:1rem;font-size:.9rem"><em>Note : ces correspondances sont indicatives. Chaque modèle a sa logique propre — utilise-les comme ponts, pas comme équivalences strictes.</em></p>
   `;
 }
 
-/* ============== NAV & SCORE ============== */
+const crossMap = [
+  { pcm: "Empathique", disc: "S (Stable)", mbti: "ISFJ / ESFJ / INFJ", traits: "Harmonie, attention aux autres, écoute" },
+  { pcm: "Travaillomane", disc: "C (Consciencieux)", mbti: "ISTJ / INTJ", traits: "Logique, structure, rigueur" },
+  { pcm: "Persévérant", disc: "C + D (Conscien. + Domin.)", mbti: "INTJ / INFJ / ENTJ", traits: "Convictions, valeurs, engagement" },
+  { pcm: "Rêveur", disc: "S/C (Stable/Consc.)", mbti: "INFP / INTP / ISTP", traits: "Introversion, imagination, calme" },
+  { pcm: "Rebelle", disc: "I (Influent)", mbti: "ENFP / ESFP / ESTP", traits: "Spontanéité, fun, réactivité" },
+  { pcm: "Promoteur", disc: "D (Dominant)", mbti: "ESTP / ENTJ", traits: "Action, audace, résultats" },
+];
+
+function renderCross() {
+  const root = document.getElementById("cross-section");
+  root.innerHTML = `
+    <table class="pcm-table">
+      <thead>
+        <tr><th>PCM</th><th>DISC</th><th>MBTI (typiques)</th><th>Traits communs</th></tr>
+      </thead>
+      <tbody>
+        ${crossMap.map(r => `
+          <tr>
+            <td><strong>${r.pcm}</strong></td>
+            <td>${r.disc}</td>
+            <td style="font-family:monospace">${r.mbti}</td>
+            <td style="color:var(--muted)">${r.traits}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+    <p style="margin-top:1rem;font-size:.9rem"><em>Note : ces correspondances sont indicatives. Le PCM se distingue par sa vision dynamique (Phase qui peut évoluer, gestion du stress en 3 degrés) absente du DISC ou du MBTI.</em></p>
+  `;
+}
+
+/* ============================================================
+   NAV & SCORE
+   ============================================================ */
 
 let scoreCount = 0, totalCount = 0;
 function addScore(isOK) {
@@ -1259,6 +1501,7 @@ document.querySelectorAll("nav button[data-mod]").forEach(btn => {
     document.querySelectorAll(".module").forEach(m => m.classList.remove("active"));
     btn.classList.add("active");
     document.getElementById(btn.dataset.mod).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 });
 
@@ -1268,8 +1511,8 @@ renderInt();
 renderPra();
 renderSelf();
 renderChat();
-renderPCM();
-renderMBTI();
+renderStress();
+renderDrivers();
 renderCross();
 </script>
 

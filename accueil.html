@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App-P-daCom — Choisis ton jeu</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --soft: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --disc: linear-gradient(135deg, #e63946, #f4a261);
+    --pcm: linear-gradient(135deg, #3f51b5, #9c27b0);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 3rem 1rem 1.5rem;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 .5rem; font-size: 2.4rem; }
+  header p { margin: 0; color: var(--muted); }
+  main {
+    flex: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    align-content: start;
+  }
+  .game {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform .2s, box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+    border-top: 6px solid;
+  }
+  .game:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  }
+  .game.disc { border-top-color: #e63946; }
+  .game.pcm { border-top-color: #9c27b0; }
+  .badge {
+    display: inline-block;
+    padding: .3rem .8rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: .05em;
+    margin-bottom: 1rem;
+    width: fit-content;
+  }
+  .badge.disc { background: var(--disc); }
+  .badge.pcm { background: var(--pcm); }
+  .game h2 { margin: 0 0 .5rem; font-size: 1.6rem; }
+  .game .tagline { color: var(--muted); margin: 0 0 1.2rem; font-size: .95rem; }
+  .game ul { padding-left: 1.2rem; margin: 0 0 1.5rem; }
+  .game li { margin-bottom: .3rem; }
+  .game .footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--soft);
+    font-size: .9rem;
+    color: var(--muted);
+  }
+  .game .cta {
+    margin-top: 1rem;
+    display: inline-block;
+    padding: .6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    width: fit-content;
+  }
+  .game.disc .cta { background: var(--disc); }
+  .game.pcm .cta { background: var(--pcm); }
+  footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>App-P-daCom</h1>
+  <p>Deux jeux pour apprendre à communiquer avec tous les profils de personnalité.<br>Choisis le modèle qui te convient — ou fais les deux !</p>
+</header>
+
+<main>
+
+  <a href="disc.html" class="game disc">
+    <span class="badge disc">RECOMMANDÉ POUR DÉBUTER</span>
+    <h2>Jeu DISC</h2>
+    <p class="tagline">4 profils, rapide à apprendre, idéal pour identifier vite les comportements au quotidien.</p>
+    <ul>
+      <li><strong>Dominant</strong> · direct, orienté résultat</li>
+      <li><strong>Influent</strong> · sociable, enthousiaste</li>
+      <li><strong>Stable</strong> · calme, harmonisateur</li>
+      <li><strong>Consciencieux</strong> · analytique, précis</li>
+    </ul>
+    <div class="footer">7 modules · ~30 min · Auto-évaluation + conversation simulée</div>
+    <span class="cta">Commencer le jeu DISC →</span>
+  </a>
+
+  <a href="index.html" class="game pcm">
+    <span class="badge pcm">PLUS DÉTAILLÉ</span>
+    <h2>Jeu PCM</h2>
+    <p class="tagline">6 types, modèle utilisé par la NASA. Intègre les besoins psychologiques et la gestion du stress.</p>
+    <ul>
+      <li><strong>Empathique</strong> · perçoit par les émotions</li>
+      <li><strong>Travaillomane</strong> · perçoit par la logique</li>
+      <li><strong>Persévérant</strong> · perçoit par les opinions</li>
+      <li><strong>Rêveur</strong> · perçoit par l'imagination</li>
+      <li><strong>Rebelle</strong> · perçoit par les réactions</li>
+      <li><strong>Promoteur</strong> · perçoit par les actions</li>
+    </ul>
+    <div class="footer">7 modules · ~45 min · 3 degrés de stress + drivers + passerelles DISC/MBTI</div>
+    <span class="cta">Commencer le jeu PCM →</span>
+  </a>
+
+</main>
+
+<footer>
+  Tu peux passer d'un jeu à l'autre à tout moment via les liens en haut de page.
+</footer>
+
+</body>
+</html>
