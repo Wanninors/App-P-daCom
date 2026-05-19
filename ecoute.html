@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App-P-daCom — Posture d'écoute</title>
+<style>
+  :root {
+    --primary: #10b981;
+    --secondary: #06b6d4;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --soft: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --ok: #22c55e;
+    --ko: #ef4444;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  header h1 { margin: 0; font-size: 2rem; }
+  header p { margin: .5rem 0 0; color: rgba(255,255,255,.85); }
+  header a.back {
+    display: inline-block;
+    margin-top: .8rem;
+    color: white;
+    background: rgba(0,0,0,.25);
+    padding: .4rem .9rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: .85rem;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem;
+    background: var(--card);
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,.3);
+  }
+  nav button {
+    background: var(--soft);
+    color: var(--text);
+    border: none;
+    padding: .6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: all .2s;
+  }
+  nav button:hover { background: #475569; }
+  nav button.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+  .score {
+    margin-left: auto;
+    padding: .6rem 1rem;
+    background: var(--soft);
+    border-radius: 8px;
+    font-size: .9rem;
+  }
+  main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .module { display: none; }
+  .module.active { display: block; animation: fade .3s; }
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .intro {
+    background: var(--card);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+  .intro p { color: var(--text); margin: .5rem 0; }
+  .intro h2 { color: var(--text); margin-top: 0; }
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .compare > div {
+    background: var(--soft);
+    padding: 1.2rem;
+    border-radius: 10px;
+    border-top: 4px solid;
+  }
+  .compare .left { border-top-color: var(--ko); }
+  .compare .right { border-top-color: var(--ok); }
+  .compare h3 { margin-top: 0; font-size: 1.1rem; }
+  .compare .left h3 { color: var(--ko); }
+  .compare .right h3 { color: var(--ok); }
+  .compare ul { padding-left: 1.2rem; color: var(--text); }
+  .compare li { margin: .4rem 0; }
+  .scenario {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+  }
+  .scenario-text {
+    font-size: 1.05rem;
+    font-style: italic;
+    padding: 1rem;
+    background: var(--soft);
+    border-left: 4px solid var(--primary);
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+  }
+  .options { display: grid; gap: .8rem; }
+  .options button {
+    background: var(--soft);
+    color: var(--text);
+    border: 2px solid transparent;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all .2s;
+  }
+  .options button:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: #475569;
+  }
+  .options button.correct {
+    border-color: var(--ok);
+    background: rgba(34, 197, 94, .15);
+  }
+  .options button.wrong {
+    border-color: var(--ko);
+    background: rgba(239, 68, 68, .15);
+  }
+  .options button.partial {
+    border-color: var(--warn);
+    background: rgba(245, 158, 11, .15);
+  }
+  .feedback {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background: var(--soft);
+    border-left: 4px solid var(--primary);
+  }
+  .feedback.ok { border-left-color: var(--ok); }
+  .feedback.ko { border-left-color: var(--ko); }
+  .feedback.warn { border-left-color: var(--warn); }
+  .feedback strong { display: block; margin-bottom: .4rem; }
+  .actions { display: flex; gap: .8rem; margin-top: 1.5rem; flex-wrap: wrap; }
+  .actions button {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    padding: .7rem 1.4rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .progress {
+    width: 100%;
+    height: 8px;
+    background: var(--soft);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transition: width .3s;
+  }
+  .technique {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border-left: 5px solid var(--primary);
+  }
+  .technique h3 { margin: 0 0 .6rem; color: var(--primary); }
+  .technique .ex {
+    background: var(--soft);
+    padding: .8rem;
+    border-radius: 6px;
+    margin-top: .8rem;
+    font-style: italic;
+    color: var(--text);
+  }
+  .level {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border-top: 5px solid;
+  }
+  .level.l1 { border-top-color: #94a3b8; }
+  .level.l2 { border-top-color: #06b6d4; }
+  .level.l3 { border-top-color: var(--primary); }
+  .level h3 { margin: 0 0 .6rem; }
+  .level .ex {
+    background: var(--soft);
+    padding: .8rem;
+    border-radius: 6px;
+    margin-top: .6rem;
+    font-style: italic;
+    color: var(--text);
+  }
+  .dim-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .dim-grid > div {
+    background: var(--soft);
+    padding: 1rem;
+    border-radius: 8px;
+    border-top: 3px solid var(--primary);
+  }
+  .dim-grid h4 { margin: 0 0 .4rem; }
+  p { color: var(--muted); }
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: .9rem; }
+  @media (max-width: 600px) {
+    .compare, .dim-grid { grid-template-columns: 1fr; }
+    nav button { font-size: .75rem; padding: .4rem .7rem; }
+  }
+  .quote {
+    font-size: 1.05rem;
+    font-style: italic;
+    padding: 1rem;
+    background: var(--soft);
+    border-left: 4px solid var(--secondary);
+    border-radius: 4px;
+    margin: 1rem 0;
+    color: var(--text);
+  }
+  .quote::before { content: "« "; opacity: .5; }
+  .quote::after { content: " »"; opacity: .5; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Posture d'écoute</h1>
+  <p>Deux exercices fondamentaux : <strong>comprendre avant de convaincre</strong> & <strong>reformuler</strong></p>
+  <a class="back" href="accueil.html">← Retour à l'accueil</a>
+</header>
+
+<nav>
+  <button data-mod="m1" class="active">1. Convaincre vs Comprendre</button>
+  <button data-mod="m2">2. Repérer ton réflexe</button>
+  <button data-mod="m3">3. 4 techniques anti-réflexe</button>
+  <button data-mod="m4">4. Reformulation : 3 niveaux</button>
+  <button data-mod="m5">5. Choisir la bonne reformulation</button>
+  <button data-mod="m6">6. Faits, ressenti, besoin</button>
+  <button data-mod="m7">7. Trouve l'erreur</button>
+  <div class="score">Score : <span id="score">0</span> / <span id="total">0</span></div>
+</nav>
+
+<main>
+
+<!-- ============================================
+     MODULE 1 : INTRO CONVAINCRE vs COMPRENDRE
+     ============================================ -->
+<section class="module active" id="m1">
+  <div class="intro">
+    <h2>Convaincre ou comprendre ?</h2>
+    <p>Dans 90% des échanges, on écoute pour <strong>répondre</strong>, pas pour <strong>comprendre</strong>. On prépare sa contre-argumentation pendant que l'autre parle. Résultat : on ne comprend pas vraiment son besoin, et l'autre se sent non-écouté.</p>
+    <div class="quote">L'écoute est l'attitude qui consiste à essayer de comprendre l'autre avant d'essayer d'être compris.</div>
+    <p>Passer de « convaincre » à « comprendre » n'est pas renoncer à son point de vue. C'est <strong>repousser sa prise de parole</strong> jusqu'à avoir réellement compris ce que dit l'autre — ses faits, son ressenti, son besoin.</p>
+  </div>
+
+  <div class="compare">
+    <div class="left">
+      <h3>Mode CONVAINCRE</h3>
+      <ul>
+        <li>J'écoute pour repérer les failles dans l'argument adverse</li>
+        <li>Je prépare ma réponse pendant qu'il/elle parle</li>
+        <li>« Oui mais... », « Au contraire... », « Tu as tort parce que... »</li>
+        <li>Je cherche à avoir raison</li>
+        <li>L'autre se sent jugé(e), pas écouté(e)</li>
+        <li>L'échange devient un duel</li>
+      </ul>
+    </div>
+    <div class="right">
+      <h3>Mode COMPRENDRE</h3>
+      <ul>
+        <li>J'écoute pour saisir le besoin derrière les mots</li>
+        <li>Je pose des questions ouvertes avant de répondre</li>
+        <li>« Dis-m'en plus », « Qu'est-ce qui te fait dire ça ? »</li>
+        <li>Je cherche à voir le monde par ses yeux</li>
+        <li>L'autre se sent respecté(e), il/elle s'ouvre</li>
+        <li>L'échange devient une exploration commune</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="intro" style="margin-top:1rem">
+    <h2>Pourquoi c'est si dur ?</h2>
+    <p>Notre cerveau a 3 « urgences » qui activent le mode convaincre :</p>
+    <ul style="color:var(--text)">
+      <li><strong>L'urgence de l'ego</strong> : « j'ai raison, je dois le prouver »</li>
+      <li><strong>L'urgence du temps</strong> : « pas le temps de creuser, il faut décider »</li>
+      <li><strong>L'urgence émotionnelle</strong> : « ses mots me piquent, je dois me défendre »</li>
+    </ul>
+    <p>Le passage en mode « comprendre » se fait en reconnaissant ces urgences et en s'autorisant une <strong>pause</strong> avant de répondre.</p>
+  </div>
+
+  <div class="actions"><button onclick="goto('m2')">Passer à l'exercice →</button></div>
+</section>
+
+<!-- ============================================
+     MODULE 2 : REPERER LE REFLEXE
+     ============================================ -->
+<section class="module" id="m2">
+  <div class="intro">
+    <h2>Exercice : repérer ton réflexe</h2>
+    <p>Pour chaque scène, choisis ta réponse <strong>spontanée</strong> (pas celle que tu sais juste). Tu identifieras où ton réflexe penche : convaincre, te défendre, ou comprendre.</p>
+  </div>
+  <div class="progress"><div class="progress-bar" id="reflex-progress" style="width:0%"></div></div>
+  <div class="scenario" id="reflex-card"></div>
+</section>
+
+<!-- ============================================
+     MODULE 3 : 4 TECHNIQUES
+     ============================================ -->
+<section class="module" id="m3">
+  <div class="intro">
+    <h2>4 techniques pour basculer en mode « comprendre »</h2>
+    <p>Quatre gestes simples à entraîner. Pas besoin de tous les utiliser à chaque fois — choisis-en un par semaine pour l'ancrer.</p>
+  </div>
+
+  <div class="technique">
+    <h3>1. La règle des 3 secondes</h3>
+    <p style="color:var(--text)">Avant de répondre, compte mentalement 3 secondes. Ce silence laisse le cerveau passer du mode défense au mode écoute. L'autre, surpris, complète souvent sa pensée.</p>
+    <div class="ex">Au lieu de : « Oui mais en fait... » <br>Tu attends 3 secondes... puis : « Hmm, dis-m'en plus. »</div>
+  </div>
+
+  <div class="technique">
+    <h3>2. La question magique</h3>
+    <p style="color:var(--text)">Trois questions qui ouvrent au lieu de fermer :</p>
+    <ul style="color:var(--text)">
+      <li>« Dis-m'en plus. »</li>
+      <li>« Qu'est-ce qui te fait dire ça ? »</li>
+      <li>« Aide-moi à comprendre. »</li>
+    </ul>
+    <div class="ex">Quand on te dit « ton projet ne marchera jamais », tu réponds « Qu'est-ce qui te fait dire ça ? » — au lieu de défendre.</div>
+  </div>
+
+  <div class="technique">
+    <h3>3. Le piège du « Oui mais »</h3>
+    <p style="color:var(--text)">Chaque fois que tu commences une phrase par « oui mais », tu n'as PAS écouté : tu défends. Remplace par « oui ET » ou par une question.</p>
+    <div class="ex">Au lieu de : « Oui mais on a déjà essayé. » <br>Tu dis : « Oui, et qu'est-ce que tu vois de différent cette fois ? »</div>
+  </div>
+
+  <div class="technique">
+    <h3>4. Le baromètre intérieur</h3>
+    <p style="color:var(--text)">À chaque tour de parole, pose-toi mentalement la question : <em>« Là, est-ce que je cherche à le/la comprendre ou à le/la convaincre ? »</em></p>
+    <div class="ex">Si la réponse est « convaincre », alors c'est encore trop tôt. Pose une question avant de répondre.</div>
+  </div>
+
+  <div class="actions"><button onclick="goto('m4')">Passer à la reformulation →</button></div>
+</section>
+
+<!-- ============================================
+     MODULE 4 : REFORMULATION 3 NIVEAUX
+     ============================================ -->
+<section class="module" id="m4">
+  <div class="intro">
+    <h2>La reformulation : 3 niveaux de profondeur</h2>
+    <p>Reformuler, ce n'est pas dire « je t'ai compris ». C'est <strong>prouver</strong> qu'on a compris, en restituant ce qu'on a entendu — et en demandant confirmation.</p>
+    <p>Trois niveaux selon ce qu'on restitue. Plus on monte en niveau, plus on touche au besoin réel — et plus l'autre se sent vraiment entendu(e).</p>
+  </div>
+
+  <div class="level l1">
+    <h3>Niveau 1 — L'écho (reformuler les mots)</h3>
+    <p style="color:var(--text)">Tu répètes les mots clés. Utile pour montrer que tu écoutes, mais reste superficiel. À éviter en boucle (effet perroquet).</p>
+    <div class="ex">
+      L'autre : « J'en ai marre de ce projet, il avance pas. »<br>
+      Toi : « Tu en as marre, ça n'avance pas. »
+    </div>
+  </div>
+
+  <div class="level l2">
+    <h3>Niveau 2 — La paraphrase (reformuler le sens)</h3>
+    <p style="color:var(--text)">Tu reformules avec tes propres mots ce que tu as compris. Cela te force à digérer l'information — et l'autre peut corriger si tu as mal compris.</p>
+    <div class="ex">
+      L'autre : « J'en ai marre de ce projet, il avance pas. »<br>
+      Toi : « Si je comprends bien, tu as l'impression d'être bloqué(e) malgré ton investissement. C'est ça ? »
+    </div>
+  </div>
+
+  <div class="level l3">
+    <h3>Niveau 3 — Le besoin (reformuler ce qui compte)</h3>
+    <p style="color:var(--text)">Tu nommes ce qu'il y a <em>derrière</em> les mots : le besoin, la valeur, l'attente. C'est là que l'autre se sent profondément entendu(e). Toujours terminer par une question pour valider.</p>
+    <div class="ex">
+      L'autre : « J'en ai marre de ce projet, il avance pas. »<br>
+      Toi : « Tu as besoin de voir des résultats concrets pour rester engagé(e), c'est ça ? Ou c'est autre chose qui te pèse ? »
+    </div>
+  </div>
+
+  <div class="intro" style="margin-top:1.5rem">
+    <h2>Les 4 règles d'or de la reformulation</h2>
+    <ol style="color:var(--text)">
+      <li><strong>Utiliser les mots de l'autre</strong>, pas les tiens (« compliqué » reste « compliqué », pas « difficile »)</li>
+      <li><strong>Ne rien ajouter</strong> (pas d'interprétation, pas de jugement, pas de conseil)</li>
+      <li><strong>Toujours demander confirmation</strong> : « c'est ça ? », « j'ai bien compris ? »</li>
+      <li><strong>Accepter d'avoir mal compris</strong> et reformuler à nouveau si besoin</li>
+    </ol>
+  </div>
+
+  <div class="actions"><button onclick="goto('m5')">Exercice →</button></div>
+</section>
+
+<!-- ============================================
+     MODULE 5 : CHOISIR LA BONNE REFORMULATION
+     ============================================ -->
+<section class="module" id="m5">
+  <div class="intro">
+    <h2>Exercice : choisir la bonne reformulation</h2>
+    <p>Pour chaque situation, choisis la reformulation la plus appropriée. Les autres reformulations ont chacune un défaut : trop superficielle, jugement caché, conseil prématuré, interprétation excessive.</p>
+  </div>
+  <div class="progress"><div class="progress-bar" id="ref-progress" style="width:0%"></div></div>
+  <div class="scenario" id="ref-card"></div>
+</section>
+
+<!-- ============================================
+     MODULE 6 : FAITS, RESSENTI, BESOIN
+     ============================================ -->
+<section class="module" id="m6">
+  <div class="intro">
+    <h2>Reformuler les 3 dimensions</h2>
+    <p>Toute parole humaine porte 3 dimensions : ce qui s'est <strong>passé</strong> (faits), ce que ça <strong>fait</strong> (ressenti), ce qu'on <strong>cherche</strong> (besoin). Reformuler les 3 montre une écoute complète.</p>
+    <div class="dim-grid">
+      <div>
+        <h4 style="color:#06b6d4">FAITS</h4>
+        <p style="color:var(--text);font-size:.9rem">Ce qui s'est passé, observable, vérifiable.</p>
+        <div style="background:var(--bg);padding:.6rem;border-radius:4px;font-style:italic;font-size:.85rem;color:var(--text)">« Si je comprends, concrètement la situation c'est... »</div>
+      </div>
+      <div>
+        <h4 style="color:var(--warn)">RESSENTI</h4>
+        <p style="color:var(--text);font-size:.9rem">Ce que ça fait vivre, l'émotion sous-jacente.</p>
+        <div style="background:var(--bg);padding:.6rem;border-radius:4px;font-style:italic;font-size:.85rem;color:var(--text)">« Et tu te sens... (frustré / inquiet / déçu / ...) »</div>
+      </div>
+      <div>
+        <h4 style="color:var(--ok)">BESOIN</h4>
+        <p style="color:var(--text);font-size:.9rem">Ce qui est important, ce qui manque, ce qui est attendu.</p>
+        <div style="background:var(--bg);padding:.6rem;border-radius:4px;font-style:italic;font-size:.85rem;color:var(--text)">« Et ce qui compte pour toi, c'est... »</div>
+      </div>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="dim-progress" style="width:0%"></div></div>
+  <div class="scenario" id="dim-card"></div>
+</section>
+
+<!-- ============================================
+     MODULE 7 : TROUVE L'ERREUR
+     ============================================ -->
+<section class="module" id="m7">
+  <div class="intro">
+    <h2>Trouve l'erreur</h2>
+    <p>Une mauvaise reformulation peut faire pire que pas de reformulation du tout. Voici des reformulations <strong>défectueuses</strong> — identifie l'erreur.</p>
+  </div>
+  <div class="progress"><div class="progress-bar" id="err-progress" style="width:0%"></div></div>
+  <div class="scenario" id="err-card"></div>
+</section>
+
+</main>
+
+<footer>
+  Ces deux compétences (suspendre son jugement, reformuler le besoin) sont la base de toute communication respectueuse — au travail, en famille, en couple, partout.
+</footer>
+
+<script>
+/* ============================================================
+   MODULE 2 : REPÉRER TON RÉFLEXE
+   ============================================================ */
+
+const reflexQuestions = [
+  {
+    context: "Un collègue te dit en réunion : « Je trouve que ton projet manque de structure, ça va pas marcher. »",
+    options: [
+      { text: "« Au contraire, j'ai pris 3 semaines pour le structurer, regarde la documentation. »", type: "convaincre", why: "Tu défends. Tu n'as même pas cherché à savoir ce qu'il appelle « structure » pour lui." },
+      { text: "« Bon, c'est ton avis. Les autres trouvent ça très bien. »", type: "esquiver", why: "Tu esquives. Tu coupes l'échange au lieu de comprendre la critique." },
+      { text: "« Qu'est-ce qui te fait dire ça ? Sur quels aspects précisément ? »", type: "comprendre", why: "Tu cherches à comprendre. Tu vas obtenir des informations utiles — et il/elle se sent écouté(e)." },
+    ],
+  },
+  {
+    context: "Un client hésite : « Je suis pas sûr de cette solution, elle me paraît compliquée. »",
+    options: [
+      { text: "« Mais elle est super simple, je vais vous expliquer en 3 points. »", type: "convaincre", why: "Tu argumentes sans savoir ce qui lui paraît compliqué. Tu risques d'enfoncer son objection." },
+      { text: "« Qu'est-ce qui vous paraît compliqué exactement ? Aidez-moi à comprendre votre point de vue. »", type: "comprendre", why: "Excellente question. Tu vas découvrir si c'est l'interface, le contrat, le tarif, ou autre — et tu pourras adresser le bon point." },
+      { text: "« Toutes nos solutions sont au début un peu compliquées, c'est normal. »", type: "esquiver", why: "Tu minimises et tu généralises. Le client se sent traité comme un cas standard." },
+    ],
+  },
+  {
+    context: "Ton/ta conjoint(e) te dit : « Tu ne m'écoutes jamais quand je rentre du travail. »",
+    options: [
+      { text: "« Mais si ! Hier soir on a parlé 20 minutes. »", type: "convaincre", why: "Tu débats des faits. Mais la plainte n'est pas factuelle, elle est émotionnelle." },
+      { text: "« Je suis fatigué(e) moi aussi, sois compréhensif(ve). »", type: "esquiver", why: "Tu retournes la situation contre lui/elle. Tu ne reconnais même pas son ressenti." },
+      { text: "« Tu te sens pas écouté(e). Qu'est-ce qui te manque quand on se voit le soir ? »", type: "comprendre", why: "Tu accueilles le ressenti et tu cherches le besoin. C'est exactement la posture qui désamorce et ouvre." },
+    ],
+  },
+  {
+    context: "Ton manager te dit : « Le résultat n'est pas à la hauteur de mes attentes. »",
+    options: [
+      { text: "« On a fait ce qu'on a pu, l'équipe est crevée, le contexte était difficile. »", type: "esquiver", why: "Tu te défends. Tu n'as pas compris ce qu'il/elle attendait précisément." },
+      { text: "« Mais on a livré dans les délais, et la qualité est bonne ! »", type: "convaincre", why: "Tu argumentes. Mais peut-être que ses attentes portaient sur autre chose que les délais." },
+      { text: "« Qu'attendiez-vous précisément ? Sur quel point ? Aidez-moi à voir l'écart. »", type: "comprendre", why: "Tu transformes une critique floue en information actionnable. Tu apprends ce qui compte vraiment pour lui/elle." },
+    ],
+  },
+  {
+    context: "Un(e) ami(e) annonce : « Je quitte mon job, je pars voyager 1 an. »",
+    options: [
+      { text: "« Mais t'es fou/folle, tu vas perdre ton ancienneté et ton réseau ! »", type: "convaincre", why: "Tu projettes tes peurs. Ce n'est pas écouter, c'est imposer ta vision." },
+      { text: "« Bof, l'herbe n'est jamais plus verte ailleurs, tu vas regretter. »", type: "convaincre", why: "Jugement déguisé. Tu décides pour lui/elle de ce qui est bon." },
+      { text: "« Wow, raconte-moi. Qu'est-ce qui te pousse à faire ça maintenant ? »", type: "comprendre", why: "Tu accueilles la décision et tu explores le pourquoi. C'est précieux — et tu pourras donner ton avis APRÈS." },
+    ],
+  },
+  {
+    context: "En réunion, un collègue : « Cette approche, j'y crois pas. On a déjà essayé, ça n'a pas marché. »",
+    options: [
+      { text: "« Mais là c'est différent, on a changé X et Y, tu ne comprends pas. »", type: "convaincre", why: "« Tu ne comprends pas » est un déclencheur de conflit. Tu n'as pas écouté son expérience." },
+      { text: "« Bon, c'est ton avis. La majorité me suit. »", type: "esquiver", why: "Tu écrases avec l'argument du nombre. Tu perds une information précieuse (l'échec précédent)." },
+      { text: "« Tu as essayé quelque chose de similaire ? Raconte-moi ce qui n'a pas marché, ça m'aide à valider mon plan. »", type: "comprendre", why: "Tu transformes une objection en source de connaissance. L'autre se sent reconnu(e), et tu améliores ton plan." },
+    ],
+  },
+  {
+    context: "Ton ado claque la porte : « T'es nul(le), tu comprends rien à rien ! »",
+    options: [
+      { text: "« Tu vas me parler autrement, je suis ton parent ! »", type: "convaincre", why: "Tu défends ton autorité. L'ado se ferme encore plus, et le contenu réel reste enfoui." },
+      { text: "« Mais si je te comprends, tu exagères tout le temps. »", type: "esquiver", why: "Le « mais si » nie son ressenti. Et « tu exagères » est un jugement, pas une écoute." },
+      { text: "(silence) Puis : « Là tu es très en colère. Qu'est-ce que je n'ai pas compris ? »", type: "comprendre", why: "Tu accueilles l'émotion sans répliquer. C'est ce qui, à terme, ouvre les vraies conversations." },
+    ],
+  },
+  {
+    context: "Un fournisseur dit : « Vos délais de paiement sont inacceptables. »",
+    options: [
+      { text: "« C'est la politique de l'entreprise, on ne peut rien y faire. »", type: "esquiver", why: "Tu te caches derrière la règle. Tu n'as pas cherché à comprendre l'impact réel pour lui." },
+      { text: "« Vos délais de livraison aussi sont longs, on est quittes ! »", type: "convaincre", why: "Tu contre-attaques. La conversation devient un règlement de comptes." },
+      { text: "« Qu'est-ce que ça change concrètement pour vous ? Quel impact dans votre quotidien ? »", type: "comprendre", why: "Tu transformes une plainte en information business. Tu pourras peut-être trouver une solution adaptée." },
+    ],
+  },
+];
+
+let reflexIdx = 0;
+let reflexCounts = { comprendre: 0, convaincre: 0, esquiver: 0 };
+function renderReflex() {
+  const q = reflexQuestions[reflexIdx];
+  const card = document.getElementById("reflex-card");
+  document.getElementById("reflex-progress").style.width = (reflexIdx / reflexQuestions.length) * 100 + "%";
+  if (!q) {
+    document.getElementById("reflex-progress").style.width = "100%";
+    const total = reflexCounts.comprendre + reflexCounts.convaincre + reflexCounts.esquiver;
+    const dominant = Object.entries(reflexCounts).sort((a,b)=>b[1]-a[1])[0][0];
+    const dominantLabel = { comprendre: "✅ Tu es plutôt en mode COMPRENDRE", convaincre: "⚠️ Ton réflexe penche vers CONVAINCRE", esquiver: "⚠️ Tu as tendance à ESQUIVER" }[dominant];
+    card.innerHTML = `
+      <h3>Bilan de tes réflexes</h3>
+      <p style="color:var(--text);font-size:1.2rem"><strong>${dominantLabel}</strong></p>
+      <div style="margin:1.5rem 0">
+        ${["comprendre","convaincre","esquiver"].map(k=>{
+          const pct = total ? Math.round((reflexCounts[k]/total)*100) : 0;
+          const color = k==="comprendre" ? "var(--ok)" : k==="convaincre" ? "var(--ko)" : "var(--warn)";
+          return `
+            <div style="margin-bottom:.8rem">
+              <div style="display:flex;justify-content:space-between"><span>${k.charAt(0).toUpperCase()+k.slice(1)}</span><span>${pct}%</span></div>
+              <div class="progress" style="margin:0"><div class="progress-bar" style="width:${pct}%;background:${color}"></div></div>
+            </div>`;
+        }).join("")}
+      </div>
+      <div class="feedback ok"><strong>Conseil personnalisé</strong>
+      ${dominant === "comprendre" ? "Continue à entraîner ce muscle. Reviens à ce module dans un mois pour voir l'évolution." :
+        dominant === "convaincre" ? "Concentre-toi sur la technique 1 (3 secondes) et la technique 2 (question magique). Une semaine d'entraînement intense suffit pour changer le réflexe." :
+        "L'esquive protège mais empêche la résolution. Force-toi à poser UNE question ouverte avant de fuir le sujet."}
+      </div>
+      <div class="actions">
+        <button onclick="reflexIdx=0;reflexCounts={comprendre:0,convaincre:0,esquiver:0};renderReflex()">Recommencer</button>
+        <button onclick="goto('m3')">Voir les 4 techniques →</button>
+      </div>
+    `;
+    return;
+  }
+  card.innerHTML = `
+    <div class="scenario-text">${q.context}</div>
+    <p style="color:var(--text)"><strong>Ta réponse spontanée ?</strong></p>
+    <div class="options">
+      ${q.options.map((o,i)=>`<button data-i="${i}">${o.text}</button>`).join("")}
+    </div>
+    <div id="reflex-fb"></div>
+  `;
+  card.querySelectorAll(".options button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const i = parseInt(btn.dataset.i);
+      const o = q.options[i];
+      reflexCounts[o.type]++;
+      card.querySelectorAll(".options button").forEach(b=>b.disabled=true);
+      btn.classList.add(o.type === "comprendre" ? "correct" : o.type === "esquiver" ? "partial" : "wrong");
+      const correctIdx = q.options.findIndex(x => x.type === "comprendre");
+      if (i !== correctIdx) card.querySelector(`.options button[data-i="${correctIdx}"]`).classList.add("correct");
+      addScore(o.type === "comprendre");
+      const fbClass = o.type === "comprendre" ? "ok" : o.type === "esquiver" ? "warn" : "ko";
+      const fbLabel = o.type === "comprendre" ? "Posture COMPRENDRE" : o.type === "esquiver" ? "Posture ESQUIVE" : "Posture CONVAINCRE";
+      document.getElementById("reflex-fb").innerHTML = `
+        <div class="feedback ${fbClass}"><strong>${fbLabel}</strong>${o.why}</div>
+        <div class="actions"><button onclick="reflexIdx++;renderReflex()">Suivant →</button></div>
+      `;
+    });
+  });
+}
+
+/* ============================================================
+   MODULE 5 : CHOISIR LA BONNE REFORMULATION
+   ============================================================ */
+
+const refQuestions = [
+  {
+    speaker: "« J'en peux plus de ce projet, ça fait 3 mois qu'on tourne en rond, personne ne décide rien. »",
+    options: [
+      { text: "« Tu en peux plus, ça tourne en rond. »", quality: "echo", why: "Niveau 1 (écho). Pas faux, mais trop superficiel : tu n'as fait que répéter. L'autre peut se demander si tu écoutes vraiment ou si tu fais semblant." },
+      { text: "« Tu devrais en parler à ton manager, il faut que ça bouge. »", quality: "conseil", why: "Conseil prématuré. Tu n'as pas reformulé, tu as déjà sauté à la solution. Tu coupes le partage." },
+      { text: "« Si je comprends, tu as l'impression de perdre ton énergie sans voir le bout du tunnel, et ce qui te manque c'est une décision claire. C'est ça ? »", quality: "bon", why: "Excellente reformulation. Tu nommes les faits (3 mois sans décision), le ressenti (« perdre son énergie »), le besoin (décision claire), et tu valides avec « c'est ça ? »." },
+      { text: "« Tu es vraiment quelqu'un d'impatient, faut savoir attendre dans la vie. »", quality: "jugement", why: "Jugement de la personne, pas de la situation. C'est l'inverse de reformuler." },
+    ],
+    correct: 2,
+  },
+  {
+    speaker: "« Ma fille me parle plus, depuis qu'elle est en 4e c'est silence radio. »",
+    options: [
+      { text: "« Faut que tu lui imposes des moments en famille, sans téléphone. »", quality: "conseil", why: "Solution immédiate. Tu n'as même pas accueilli la peine derrière les mots. Le parent voulait être écouté, pas conseillé." },
+      { text: "« Ah, les ados, c'est l'enfer hein ! Moi aussi à l'époque... »", quality: "deviation", why: "Tu détournes vers toi. Reformuler, c'est rester centré sur l'autre, pas ramener ton expérience." },
+      { text: "« Elle ne te parle plus depuis la 4e. »", quality: "echo", why: "Écho pur. Mieux que rien, mais ne transmet pas que tu as compris le ressenti." },
+      { text: "« Tu te sens un peu écarté(e) de sa vie depuis quelques mois, et ce qui te manque c'est cette proximité que vous aviez. C'est ça que tu vis ? »", quality: "bon", why: "Tu nommes le ressenti (« écarté »), le besoin (« proximité »), et tu invites à confirmer ou corriger." },
+    ],
+    correct: 3,
+  },
+  {
+    speaker: "« Mon manager m'a refilé un nouveau dossier, alors que je suis déjà à 110%. »",
+    options: [
+      { text: "« Il faut que tu dises non, sinon ça va continuer ! »", quality: "conseil", why: "Conseil. La personne sait peut-être déjà — elle voulait être entendue d'abord." },
+      { text: "« Il t'a refilé un dossier alors que tu es à 110%. »", quality: "echo", why: "Écho. Pas terrible — ça ressemble à une machine. Va plus loin." },
+      { text: "« Tu te sens débordé(e), et ce que tu cherches c'est de la reconnaissance de ta charge actuelle avant qu'on en rajoute, non ? »", quality: "bon", why: "Reformulation du ressenti (« débordé ») et du besoin (« reconnaissance de la charge »). Question ouverte à la fin pour valider." },
+      { text: "« Bah c'est qu'il a confiance en toi, c'est plutôt bon signe ! »", quality: "minimisation", why: "Tu minimises et tu transformes le problème en compliment. Tu nies son ressenti." },
+    ],
+    correct: 2,
+  },
+  {
+    speaker: "« Cette réunion d'équipe hebdo, ça sert à rien, c'est une perte de temps. »",
+    options: [
+      { text: "« Tu trouves que c'est une perte de temps. »", quality: "echo", why: "Écho. Pas mauvais pour démarrer, mais reste à creuser : pourquoi ?" },
+      { text: "« Mais si, ça permet de partager les infos ! »", quality: "convaincre", why: "Tu défends la réunion. Ce n'est pas une reformulation, c'est une contre-argumentation." },
+      { text: "« Si je comprends bien, tu en sors avec l'impression de ne pas avoir avancé. Qu'est-ce qui rendrait cette réunion utile pour toi ? »", quality: "bon", why: "Tu reformules le ressenti (« ne pas avoir avancé »), puis tu ouvres sur le besoin. Excellent." },
+      { text: "« Toi t'es jamais content, hein. »", quality: "jugement", why: "Attaque personnelle. Tu fais sortir la personne de l'échange." },
+    ],
+    correct: 2,
+  },
+  {
+    speaker: "« Mon père est tombé malade, je vais devoir m'occuper de lui en plus du boulot. »",
+    options: [
+      { text: "« Tu vas devoir t'occuper de lui en plus du boulot. »", quality: "echo", why: "Écho. Restitue les faits mais pas l'émotion ni la charge. Trop neutre face à un événement lourd." },
+      { text: "« Faut surtout pas que tu te sacrifies, prends soin de toi en priorité ! »", quality: "conseil", why: "Conseil. Tu sautes à la prescription. Avant tout, accueille." },
+      { text: "« Ça veut dire que tu vas devoir tout porter — son besoin à lui, ton boulot, et le reste. Comment tu te sens face à ça ? »", quality: "bon", why: "Tu nommes la charge (« tout porter »), tu n'imposes pas d'émotion, tu invites à l'exprimer. Reformulation respectueuse." },
+      { text: "« Oh là là, j'ai vécu pareil, c'est l'enfer. »", quality: "deviation", why: "Tu ramènes à toi. Évite de capter le projecteur quand l'autre s'ouvre." },
+    ],
+    correct: 2,
+  },
+  {
+    speaker: "« On a perdu le client X. Je crois que j'ai mal géré la dernière relance. »",
+    options: [
+      { text: "« Mais non, c'est pas ta faute, ça arrive ! »", quality: "minimisation", why: "Tu nies son auto-évaluation. Tu crois le rassurer, mais tu coupes la réflexion qu'il/elle commence." },
+      { text: "« Quelle était l'erreur ? On en tire quoi pour la prochaine fois ? »", quality: "conseil", why: "Tu sautes directement au « learn ». Avant, accueille ce qu'il/elle ressent." },
+      { text: "« Tu as ce sentiment d'avoir manqué quelque chose sur la dernière relance, et ça te pèse. Tu peux me dire ce qui te fait dire ça ? »", quality: "bon", why: "Tu reformules le ressenti et tu invites à expliciter. Tu laisses la personne explorer sans la déplacer." },
+      { text: "« T'as mal géré la relance. »", quality: "echo", why: "Écho froid, presque accusateur dans ce contexte. À éviter." },
+    ],
+    correct: 2,
+  },
+  {
+    speaker: "« Je me demande si je dois changer de boulot, j'ai l'impression de stagner. »",
+    options: [
+      { text: "« Vas-y change, la vie est courte ! »", quality: "conseil", why: "Conseil express. Tu prends parti sans avoir compris ce qui « stagne » pour cette personne." },
+      { text: "« Mais reste, t'as un super job ! »", quality: "conseil", why: "Conseil opposé, même défaut : tu décides pour l'autre." },
+      { text: "« Tu te demandes si tu dois changer de boulot. »", quality: "echo", why: "Écho pur. Pas mauvais, mais ne traduit pas le besoin caché derrière « stagner »." },
+      { text: "« Quand tu dis « stagner », qu'est-ce qui te manque concrètement ? Du défi, du sens, des perspectives, autre chose ? »", quality: "bon", why: "Tu invites à creuser le besoin réel sans présupposer. Reformulation par exploration." },
+    ],
+    correct: 3,
+  },
+  {
+    speaker: "« Mon associé prend toutes les décisions sans me consulter. »",
+    options: [
+      { text: "« Faut que tu lui dises stop, c'est pas une associat... »", quality: "conseil", why: "Solution prématurée. Tu ne sais pas encore ce que la personne ressent ni cherche." },
+      { text: "« Donc tu te sens mis(e) à l'écart des décisions, et tu as besoin de retrouver ta place dans cette association — c'est ça ? »", quality: "bon", why: "Reformulation du ressenti (mis à l'écart) et du besoin (retrouver sa place). Validation à la fin." },
+      { text: "« Il prend toutes les décisions sans te consulter. »", quality: "echo", why: "Écho. Sec, n'ouvre pas vraiment." },
+      { text: "« Bah les associés c'est toujours comme ça, c'est le jeu. »", quality: "minimisation", why: "Tu normalises et tu invalides son ressenti." },
+    ],
+    correct: 1,
+  },
+];
+
+let refIdx = 0;
+function renderRef() {
+  const q = refQuestions[refIdx];
+  const card = document.getElementById("ref-card");
+  document.getElementById("ref-progress").style.width = (refIdx / refQuestions.length) * 100 + "%";
+  if (!q) {
+    document.getElementById("ref-progress").style.width = "100%";
+    card.innerHTML = `
+      <h3>Module terminé 🎉</h3>
+      <p style="color:var(--text)">Tu sais maintenant repérer les fausses reformulations (écho creux, conseil déguisé, jugement, minimisation, déviation) et identifier les bonnes.</p>
+      <div class="actions">
+        <button onclick="refIdx=0;renderRef()">Recommencer</button>
+        <button onclick="goto('m6')">Passer aux 3 dimensions →</button>
+      </div>
+    `;
+    return;
+  }
+  card.innerHTML = `
+    <p style="color:var(--muted);margin-bottom:.5rem">L'autre te dit :</p>
+    <div class="scenario-text">${q.speaker}</div>
+    <p style="color:var(--text)"><strong>Quelle est la meilleure reformulation ?</strong></p>
+    <div class="options">
+      ${q.options.map((o,i)=>`<button data-i="${i}">${o.text}</button>`).join("")}
+    </div>
+    <div id="ref-fb"></div>
+  `;
+  card.querySelectorAll(".options button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const i = parseInt(btn.dataset.i);
+      const o = q.options[i];
+      card.querySelectorAll(".options button").forEach(b=>b.disabled=true);
+      const isOK = i === q.correct;
+      btn.classList.add(isOK ? "correct" : "wrong");
+      if (!isOK) card.querySelector(`.options button[data-i="${q.correct}"]`).classList.add("correct");
+      addScore(isOK);
+      document.getElementById("ref-fb").innerHTML = `
+        <div class="feedback ${isOK ? 'ok' : 'ko'}">
+          <strong>${isOK ? "Excellent." : "Pas la meilleure."}</strong>
+          ${o.why}
+        </div>
+        <div class="actions"><button onclick="refIdx++;renderRef()">Suivant →</button></div>
+      `;
+    });
+  });
+}
+
+/* ============================================================
+   MODULE 6 : FAITS / RESSENTI / BESOIN
+   ============================================================ */
+
+const dimQuestions = [
+  {
+    speaker: "« J'ai bossé tout le week-end sur cette présentation, et personne ne m'a dit merci en réunion. »",
+    target: "besoin",
+    options: [
+      { text: "« Tu as bossé tout le week-end et personne n'a remercié. »", dim: "faits", why: "Tu restes au niveau des faits. C'est OK pour démarrer, mais le besoin sous-jacent (reconnaissance) n'est pas nommé." },
+      { text: "« Tu te sens vexé(e) et déçu(e). »", dim: "ressenti", why: "Tu nommes le ressenti. Bien, mais on peut aller plus profond : ce qui manque, c'est de la reconnaissance." },
+      { text: "« Ce qui te manque, c'est qu'on reconnaisse l'effort que tu mets — pas juste le résultat. C'est ça ? »", dim: "besoin", why: "Tu touches le besoin réel (reconnaissance de l'effort) et tu le formules avec ses mots à elle. Niveau le plus profond." },
+    ],
+  },
+  {
+    speaker: "« Mon stage de fin d'études se passe mal, je crois que je vais arrêter avant la fin. »",
+    target: "ressenti",
+    options: [
+      { text: "« Tu envisages d'arrêter ton stage avant la fin. »", dim: "faits", why: "Tu restes au factuel. C'est trop neutre face à une situation chargée émotionnellement. Touche d'abord le ressenti." },
+      { text: "« Tu te sens découragé(e) ou démuni(e) dans ce stage en ce moment ? »", dim: "ressenti", why: "Tu invites à nommer le ressenti, sans imposer un mot. C'est la première dimension à toucher quand quelqu'un envisage une décision lourde." },
+      { text: "« Tu cherches une situation où tu pourrais t'épanouir et apprendre vraiment. »", dim: "besoin", why: "Tu sautes directement au besoin sans valider l'émotion. Risque : la personne ne se sent pas accueillie dans sa difficulté présente." },
+    ],
+  },
+  {
+    speaker: "« Mon collègue arrive en retard tous les matins depuis 2 semaines. »",
+    target: "faits",
+    options: [
+      { text: "« Donc concrètement, tu observes des retards tous les matins depuis 14 jours. C'est bien ça ? »", dim: "faits", why: "Tu reformules les faits avec précision. Utile quand on veut clarifier avant d'aborder le ressenti ou la décision." },
+      { text: "« Et ça commence à t'agacer sérieusement ? »", dim: "ressenti", why: "Tu sautes au ressenti — peut-être trop vite si la personne voulait d'abord constater factuellement avant de s'autoriser à ressentir." },
+      { text: "« Tu as besoin que la règle soit respectée pour que l'équipe fonctionne. »", dim: "besoin", why: "Tu vas au besoin trop tôt. La personne n'a pas encore exprimé d'émotion ni de demande." },
+    ],
+  },
+  {
+    speaker: "« Mon père m'a encore comparé à mon frère hier au repas. »",
+    target: "ressenti",
+    options: [
+      { text: "« Il t'a comparé à ton frère, encore. »", dim: "faits", why: "Reformulation factuelle, mais ce que la personne attend en priorité ici, c'est qu'on reconnaisse ce qu'elle ressent." },
+      { text: "« Ça te blesse encore, malgré le temps qui passe. »", dim: "ressenti", why: "Tu accueilles l'émotion sans dramatiser ni minimiser. Le mot « blesser » est respectueux du ressenti." },
+      { text: "« Tu as besoin d'exister par toi-même aux yeux de ton père, sans cette comparaison. »", dim: "besoin", why: "Belle reformulation du besoin, mais peut-être trop interprétative en première intention. Accueille d'abord le ressenti." },
+    ],
+  },
+  {
+    speaker: "« Mon client a annulé le contrat hier sans aucune explication. »",
+    target: "faits",
+    options: [
+      { text: "« Tu te sens trahi(e) par ce silence. »", dim: "ressenti", why: "Le mot « trahi » est fort, peut-être projetté. Mieux vaut clarifier les faits d'abord." },
+      { text: "« Donc le contrat est annulé, et tu n'as eu aucun motif. C'est bien ça ? »", dim: "faits", why: "Tu clarifies factuellement. Idéal pour s'assurer qu'on parle bien de la même chose avant d'explorer l'émotion." },
+      { text: "« Ce qui te manque, c'est de la transparence dans cette relation. »", dim: "besoin", why: "Reformulation du besoin, mais prématuré. Commence par stabiliser les faits." },
+    ],
+  },
+  {
+    speaker: "« Je voudrais qu'on déménage à la campagne, mais je sais pas comment le dire à ma conjointe. »",
+    target: "besoin",
+    options: [
+      { text: "« Tu veux déménager à la campagne mais tu hésites à le dire. »", dim: "faits", why: "Reformulation factuelle. Manque la dimension du besoin sous-jacent : qu'est-ce qui rend ce sujet difficile à aborder ?" },
+      { text: "« Tu es tiraillé(e) entre ton envie et la peur de sa réaction. »", dim: "ressenti", why: "Reformulation du ressenti, intéressante. Mais le vrai besoin n'est pas nommé." },
+      { text: "« Ce qui compte pour toi, c'est de pouvoir partager ce rêve sans le casser ou créer un conflit. C'est ça que tu cherches à protéger ? »", dim: "besoin", why: "Tu touches le besoin profond (partager sans casser) et tu invites à confirmer. Excellent niveau 3." },
+    ],
+  },
+];
+
+let dimIdx = 0;
+function renderDim() {
+  const q = dimQuestions[dimIdx];
+  const card = document.getElementById("dim-card");
+  document.getElementById("dim-progress").style.width = (dimIdx / dimQuestions.length) * 100 + "%";
+  if (!q) {
+    document.getElementById("dim-progress").style.width = "100%";
+    card.innerHTML = `
+      <h3>Module terminé 🎉</h3>
+      <p style="color:var(--text)">Tu as compris : selon le moment, on reformule plutôt les faits (pour clarifier), le ressenti (pour accueillir), ou le besoin (pour aller au fond). L'art consiste à <strong>choisir la bonne dimension au bon moment</strong>.</p>
+      <div class="actions">
+        <button onclick="dimIdx=0;renderDim()">Recommencer</button>
+        <button onclick="goto('m7')">Trouve l'erreur →</button>
+      </div>
+    `;
+    return;
+  }
+  const targetLabel = { faits: "FAITS", ressenti: "RESSENTI", besoin: "BESOIN" };
+  const targetColor = { faits: "#06b6d4", ressenti: "var(--warn)", besoin: "var(--ok)" };
+  card.innerHTML = `
+    <p style="color:var(--muted);margin-bottom:.5rem">L'autre te dit :</p>
+    <div class="scenario-text">${q.speaker}</div>
+    <p style="color:var(--text)"><strong>Quelle dimension est la plus utile à reformuler ici ?</strong></p>
+    <p style="color:${targetColor[q.target]};font-weight:600">→ Dimension attendue : ${targetLabel[q.target]}</p>
+    <div class="options">
+      ${q.options.map((o,i)=>`<button data-i="${i}">${o.text}</button>`).join("")}
+    </div>
+    <div id="dim-fb"></div>
+  `;
+  card.querySelectorAll(".options button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const i = parseInt(btn.dataset.i);
+      const o = q.options[i];
+      card.querySelectorAll(".options button").forEach(b=>b.disabled=true);
+      const isOK = o.dim === q.target;
+      btn.classList.add(isOK ? "correct" : "wrong");
+      if (!isOK) {
+        const correctIdx = q.options.findIndex(x => x.dim === q.target);
+        card.querySelector(`.options button[data-i="${correctIdx}"]`).classList.add("correct");
+      }
+      addScore(isOK);
+      document.getElementById("dim-fb").innerHTML = `
+        <div class="feedback ${isOK ? 'ok' : 'ko'}">
+          <strong>${isOK ? "Pile la bonne dimension." : "Dimension à ajuster."}</strong>
+          ${o.why}
+        </div>
+        <div class="actions"><button onclick="dimIdx++;renderDim()">Suivant →</button></div>
+      `;
+    });
+  });
+}
+
+/* ============================================================
+   MODULE 7 : TROUVE L'ERREUR
+   ============================================================ */
+
+const errQuestions = [
+  {
+    dialogue: "Lui : « J'en peux plus de ce manager. »<br>Toi : « Tu devrais lui en parler franchement, ça va débloquer la situation. »",
+    options: [
+      { text: "Conseil prématuré", ok: true, why: "Exactement. Tu n'as pas reformulé du tout — tu as sauté directement à la solution. La personne voulait être entendue d'abord." },
+      { text: "Écho creux", ok: false, why: "Non, ce n'est pas un écho — au contraire, tu en mets trop. L'erreur ici est le saut à la solution." },
+      { text: "Jugement de la personne", ok: false, why: "Non, tu n'as pas jugé. Le problème est le conseil non-demandé." },
+    ],
+  },
+  {
+    dialogue: "Elle : « Je crois que je vais quitter mon poste. »<br>Toi : « Tu es trop sensible, c'est pour ça que tu prends les choses trop à cœur. »",
+    options: [
+      { text: "Écho creux", ok: false, why: "Pas un écho. C'est plus problématique." },
+      { text: "Jugement de la personne", ok: true, why: "Bien vu. Tu juges sa personnalité (« trop sensible ») au lieu d'accueillir ce qu'elle exprime. Très blessant et bloquant." },
+      { text: "Déviation vers toi", ok: false, why: "Non, tu ne parles pas de toi. C'est un jugement." },
+    ],
+  },
+  {
+    dialogue: "Lui : « Ma fille m'inquiète, elle dort plus la nuit. »<br>Toi : « Ah moi aussi avec mon fils c'était horrible, j'ai dû voir un pédopsychiatre. »",
+    options: [
+      { text: "Déviation vers toi", ok: true, why: "Oui. Tu as ramené le projecteur sur ta propre expérience. Reformuler, c'est rester centré sur l'autre — ton histoire viendra plus tard, ou pas." },
+      { text: "Conseil prématuré", ok: false, why: "Il y a un conseil implicite (voir un pro), mais l'erreur principale est la déviation." },
+      { text: "Écho creux", ok: false, why: "Tu n'as pas répété ses mots, donc pas un écho." },
+    ],
+  },
+  {
+    dialogue: "Elle : « Mon conjoint ne s'investit pas dans la maison. »<br>Toi : « Ton conjoint ne s'investit pas dans la maison. »",
+    options: [
+      { text: "Écho creux", ok: true, why: "Pile ça. Tu as juste répété mot pour mot, sans rien ajouter, sans demander confirmation. Effet perroquet qui peut sembler moqueur." },
+      { text: "Jugement de la personne", ok: false, why: "Tu n'as pas jugé." },
+      { text: "Interprétation excessive", ok: false, why: "Au contraire, tu n'as RIEN interprété." },
+    ],
+  },
+  {
+    dialogue: "Lui : « J'ai loupé mon entretien d'embauche. »<br>Toi : « C'est rien, t'inquiète, t'en trouveras un autre ! »",
+    options: [
+      { text: "Conseil prématuré", ok: false, why: "Plus subtil que ça." },
+      { text: "Minimisation du ressenti", ok: true, why: "Oui. « C'est rien » nie son émotion. Tu cherches à le rassurer, mais tu lui dis implicitement que ce qu'il vit n'est pas important." },
+      { text: "Déviation vers toi", ok: false, why: "Non, tu ne parles pas de toi." },
+    ],
+  },
+  {
+    dialogue: "Elle : « Mon père est très malade. »<br>Toi : « Donc tu te sens en colère contre ton frère qui ne s'en occupe pas. »",
+    options: [
+      { text: "Écho creux", ok: false, why: "Non, c'est même très loin de l'écho." },
+      { text: "Interprétation excessive", ok: true, why: "Bingo. Elle a parlé de son père, tu projettes une émotion (la colère) et une cible (le frère) qu'elle n'a pas mentionnées. Tu plaques ton histoire ou ton hypothèse." },
+      { text: "Conseil prématuré", ok: false, why: "Pas de conseil, mais une interprétation imposée." },
+    ],
+  },
+  {
+    dialogue: "Lui : « Je suis débordé, je ne sais plus où donner de la tête. »<br>Toi : « Faut prioriser, fais une matrice d'Eisenhower. »",
+    options: [
+      { text: "Minimisation du ressenti", ok: false, why: "Tu n'as pas dit que c'était rien, mais le problème est ailleurs." },
+      { text: "Conseil prématuré (et outil non-demandé)", ok: true, why: "Oui. Tu sautes à la solution technique sans accueillir l'épuisement exprimé. Beaucoup d'experts font ça : ils répondent à la question avant d'avoir compris l'humain." },
+      { text: "Écho creux", ok: false, why: "Pas un écho." },
+    ],
+  },
+];
+
+let errIdx = 0;
+function renderErr() {
+  const q = errQuestions[errIdx];
+  const card = document.getElementById("err-card");
+  document.getElementById("err-progress").style.width = (errIdx / errQuestions.length) * 100 + "%";
+  if (!q) {
+    document.getElementById("err-progress").style.width = "100%";
+    card.innerHTML = `
+      <h3>Bravo, exercice terminé 🎉</h3>
+      <p style="color:var(--text)">Tu sais maintenant repérer les 6 erreurs classiques de reformulation :</p>
+      <ul style="color:var(--text)">
+        <li><strong>Conseil prématuré</strong> — sauter à la solution avant d'avoir compris</li>
+        <li><strong>Jugement</strong> — qualifier la personne au lieu d'accueillir</li>
+        <li><strong>Déviation vers soi</strong> — ramener à sa propre expérience</li>
+        <li><strong>Écho creux</strong> — répéter sans rien ajouter (effet perroquet)</li>
+        <li><strong>Minimisation</strong> — « c'est pas grave » qui nie le ressenti</li>
+        <li><strong>Interprétation excessive</strong> — plaquer une émotion ou une cause non-exprimée</li>
+      </ul>
+      <p style="color:var(--text)"><strong>La pratique :</strong> dans les 7 prochains jours, à chaque conversation un peu chargée, force-toi à <em>une seule</em> reformulation propre (faits, ressenti OU besoin). C'est l'entraînement qui crée le réflexe.</p>
+      <div class="actions"><button onclick="errIdx=0;renderErr()">Recommencer</button></div>
+    `;
+    return;
+  }
+  card.innerHTML = `
+    <div class="scenario-text">${q.dialogue}</div>
+    <p style="color:var(--text)"><strong>Quelle erreur de reformulation est commise ?</strong></p>
+    <div class="options">
+      ${q.options.map((o,i)=>`<button data-i="${i}">${o.text}</button>`).join("")}
+    </div>
+    <div id="err-fb"></div>
+  `;
+  card.querySelectorAll(".options button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const i = parseInt(btn.dataset.i);
+      const o = q.options[i];
+      card.querySelectorAll(".options button").forEach(b=>b.disabled=true);
+      btn.classList.add(o.ok ? "correct" : "wrong");
+      if (!o.ok) {
+        const correctIdx = q.options.findIndex(x => x.ok);
+        card.querySelector(`.options button[data-i="${correctIdx}"]`).classList.add("correct");
+      }
+      addScore(o.ok);
+      document.getElementById("err-fb").innerHTML = `
+        <div class="feedback ${o.ok ? 'ok' : 'ko'}">
+          <strong>${o.ok ? "Bien repéré." : "Pas la bonne erreur."}</strong>
+          ${o.why}
+        </div>
+        <div class="actions"><button onclick="errIdx++;renderErr()">Suivant →</button></div>
+      `;
+    });
+  });
+}
+
+/* ============================================================
+   NAV & SCORE
+   ============================================================ */
+
+let scoreCount = 0, totalCount = 0;
+function addScore(isOK) {
+  totalCount++;
+  if (isOK) scoreCount++;
+  document.getElementById("score").textContent = scoreCount;
+  document.getElementById("total").textContent = totalCount;
+}
+
+function goto(modId) {
+  document.querySelectorAll("nav button[data-mod]").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".module").forEach(m => m.classList.remove("active"));
+  document.querySelector(`nav button[data-mod="${modId}"]`).classList.add("active");
+  document.getElementById(modId).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll("nav button[data-mod]").forEach(btn => {
+  btn.addEventListener("click", () => goto(btn.dataset.mod));
+});
+
+renderReflex();
+renderRef();
+renderDim();
+renderErr();
+</script>
+
+</body>
+</html>
