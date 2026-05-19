@@ -661,36 +661,110 @@ function showProfile(key) {
    MODULE 2 : RECONNAÎTRE
    ============================================================ */
 
-const recognitionQuestions = [
-  { text: "Sophie t'accueille : « Bonjour, comment vas-tu ? J'ai préparé du thé, installe-toi confortablement. Tu m'as l'air fatigué(e) en ce moment, tout va bien ? »", answer: "em", explain: "Accueil chaleureux, attention sensorielle (thé, confort), prise de nouvelles de la personne = type Empathique." },
-  { text: "Marc te demande : « Quel est l'objectif chiffré ? Quel délai ? J'ai noté 3 questions, on les passe dans l'ordre ? »", answer: "tr", explain: "Questions précises, chiffres, structure en 3 points = Travaillomane." },
-  { text: "Hugo dit : « À mon avis, ce projet ne respecte pas nos engagements envers les clients. C'est un principe important pour moi. »", answer: "pe", explain: "Opinion affirmée, référence à des principes et engagements = Persévérant." },
-  { text: "Léa reste silencieuse 30 secondes après ta question, puis : « ... peut-être... je vais y réfléchir. »", answer: "rv", explain: "Silence, peu de mots, besoin de temps intérieur = Rêveur." },
-  { text: "Karim entre en lançant : « Yo ! Trop bien que tu sois là, on va se marrer aujourd'hui ! T'as vu le mail du boss ? Énorme ! »", answer: "rb", explain: "Énergie, exclamations, ludique, vocabulaire imagé = Rebelle." },
-  { text: "Inès te coupe : « Bon, qu'est-ce qu'on fait ? Donne-moi 2 options et on tranche. J'ai pas la matinée. »", answer: "pr", explain: "Direct, orienté action, demande des options pour décider vite = Promoteur." },
-  { text: "Dans son bureau, Claire a aligné ses dossiers par couleur. Elle ouvre : « J'ai analysé les données. Voici les 4 conclusions, dans l'ordre de priorité. »", answer: "tr", explain: "Ordre, analyse structurée, priorisation logique = Travaillomane." },
-  { text: "Au déjeuner d'équipe, Tom dit : « C'est important qu'on soit tous bien ensemble. On peut faire l'effort de mieux s'écouter ? »", answer: "em", explain: "Focus sur le bien-être collectif, attention aux relations = Empathique." },
-  { text: "En réunion, Pierre déclare : « Je ne suis pas d'accord. Ce choix manque d'éthique vis-à-vis de nos équipes. »", answer: "pe", explain: "Opinion forte, référence éthique, défend une valeur = Persévérant." },
-  { text: "Tu invites Anna à un brainstorming. Elle te demande : « C'est combien de personnes ? Est-ce que je peux préparer ma contribution à l'avance et l'envoyer ? »", answer: "rv", explain: "Préfère préparer seul, dans le calme, plutôt que l'improvisation en groupe = Rêveur." },
-  { text: "Sur Teams, Manu écrit : « C'est TROP NUL cette procédure 😂😂 sérieux qui a inventé ça ?? On fait autrement ? »", answer: "rb", explain: "Réaction émotionnelle immédiate, ludique, conteste le cadre = Rebelle." },
-  { text: "Nico te lance au téléphone : « Trois minutes max. Tu me proposes quoi de concret ? On signe ce soir si c'est bon. »", answer: "pr", explain: "Action, temps court, décision rapide = Promoteur." },
+const recognitionPool = [
+  // Niveau 1 : signaux nets
+  { text: "Sophie t'accueille : « Bonjour, comment vas-tu ? J'ai préparé du thé, installe-toi confortablement. Tu m'as l'air fatigué(e) en ce moment, tout va bien ? »", answer: "em", difficulty: 1, explain: "Accueil chaleureux, attention sensorielle (thé, confort), prise de nouvelles de la personne = type Empathique." },
+  { text: "Marc te demande : « Quel est l'objectif chiffré ? Quel délai ? J'ai noté 3 questions, on les passe dans l'ordre ? »", answer: "tr", difficulty: 1, explain: "Questions précises, chiffres, structure en 3 points = Travaillomane." },
+  { text: "Hugo dit : « À mon avis, ce projet ne respecte pas nos engagements envers les clients. C'est un principe important pour moi. »", answer: "pe", difficulty: 1, explain: "Opinion affirmée, référence à des principes et engagements = Persévérant." },
+  { text: "Léa reste silencieuse 30 secondes après ta question, puis : « ... peut-être... je vais y réfléchir. »", answer: "rv", difficulty: 1, explain: "Silence, peu de mots, besoin de temps intérieur = Rêveur." },
+  { text: "Karim entre en lançant : « Yo ! Trop bien que tu sois là, on va se marrer aujourd'hui ! T'as vu le mail du boss ? Énorme ! »", answer: "rb", difficulty: 1, explain: "Énergie, exclamations, ludique, vocabulaire imagé = Rebelle." },
+  { text: "Inès te coupe : « Bon, qu'est-ce qu'on fait ? Donne-moi 2 options et on tranche. J'ai pas la matinée. »", answer: "pr", difficulty: 1, explain: "Direct, orienté action, demande des options pour décider vite = Promoteur." },
+  { text: "Dans son bureau, Claire a aligné ses dossiers par couleur. Elle ouvre : « J'ai analysé les données. Voici les 4 conclusions, dans l'ordre de priorité. »", answer: "tr", difficulty: 1, explain: "Ordre, analyse structurée, priorisation logique = Travaillomane." },
+  { text: "Au déjeuner d'équipe, Tom dit : « C'est important qu'on soit tous bien ensemble. On peut faire l'effort de mieux s'écouter ? »", answer: "em", difficulty: 1, explain: "Focus sur le bien-être collectif, attention aux relations = Empathique." },
+  { text: "En réunion, Pierre déclare : « Je ne suis pas d'accord. Ce choix manque d'éthique vis-à-vis de nos équipes. »", answer: "pe", difficulty: 1, explain: "Opinion forte, référence éthique, défend une valeur = Persévérant." },
+  { text: "Tu invites Anna à un brainstorming. Elle te demande : « C'est combien de personnes ? Est-ce que je peux préparer ma contribution à l'avance et l'envoyer ? »", answer: "rv", difficulty: 1, explain: "Préfère préparer seule, dans le calme, plutôt que l'improvisation en groupe = Rêveur." },
+  { text: "Sur Teams, Manu écrit : « C'est TROP NUL cette procédure 😂😂 sérieux qui a inventé ça ?? On fait autrement ? »", answer: "rb", difficulty: 1, explain: "Réaction émotionnelle immédiate, ludique, conteste le cadre = Rebelle." },
+  { text: "Nico te lance au téléphone : « Trois minutes max. Tu me proposes quoi de concret ? On signe ce soir si c'est bon. »", answer: "pr", difficulty: 1, explain: "Action, temps court, décision rapide = Promoteur." },
+
+  // Niveau 2 : indices plus subtils
+  { text: "Sur LinkedIn, Florence poste : « Aujourd'hui j'ai fini par dire NON à un projet auquel je tenais. C'était dur, mais c'était la bonne chose à faire pour rester alignée avec ce en quoi je crois. »", answer: "pe", difficulty: 2, explain: "Décision difficile guidée par ses convictions et son alignement = Persévérant. Les Travaillomanes feraient plutôt un retour factuel sur l'arbitrage." },
+  { text: "Au restaurant, Karim demande au serveur : « Pouvez-vous me détailler la cuisson exacte, l'origine de la viande, et si les légumes sont de saison ? »", answer: "tr", difficulty: 2, explain: "Recherche d'informations précises, plusieurs critères factuels = Travaillomane. (Un Persévérant aurait évoqué une valeur — bio, éthique — plutôt qu'une vérification des faits.)" },
+  { text: "À la machine à café, Jules : « Tu vas pas me croire, faut absolument que je te raconte le truc de OUF qui m'est arrivé ce matin ! »", answer: "rb", difficulty: 2, explain: "Spontanéité, hyperboles, besoin de partager une réaction = Rebelle." },
+  { text: "Anne reçoit un cadeau. Elle ouvre la carte d'abord, sourit, puis dit : « C'est tellement attentionné de ta part, ça me touche vraiment. »", answer: "em", difficulty: 2, explain: "Lecture du message avant l'objet, focus sur l'attention reçue (pas la valeur du cadeau) = Empathique." },
+  { text: "Émile envoie un mail à 23h : « Je voulais juste vous remercier personnellement pour la qualité de notre échange aujourd'hui. C'était précieux pour moi. »", answer: "em", difficulty: 2, explain: "Mail personnel, expression du ressenti, gratitude pour la relation = Empathique." },
+  { text: "Au standup, Théo lève les yeux au ciel quand le manager parle. Souffle, joue avec son stylo, attend que ça finisse.", answer: "rb", difficulty: 2, explain: "Marqueurs non-verbaux de désengagement, attitude contestataire = Rebelle en 1er degré de stress." },
+  { text: "Camille intervient peu en réunion. Quand elle parle, c'est dense et calme : « À mon sens, on passe à côté de l'essentiel ici. » Tout le monde s'arrête.", answer: "pe", difficulty: 2, explain: "Intervention rare mais sur le fond, ton affirmé sur les principes = Persévérant. (Un Rêveur ne s'imposerait pas avec autant d'autorité.)" },
+  { text: "Quand on annonce un nouveau projet, Tom : « Bon, et concrètement, on attaque quand ? Faut pas qu'on traîne, le client attend. »", answer: "pr", difficulty: 2, explain: "Veut passer à l'action immédiatement, pragmatique, orienté résultat externe = Promoteur." },
+  { text: "Quand on annonce le même projet, Sarah : « D'accord. Je vais y réfléchir et je vous reviens demain matin. »", answer: "rv", difficulty: 2, explain: "Pas de réaction immédiate, besoin de temps en solo pour traiter = Rêveur." },
+  { text: "Léa range systématiquement ses dossiers par couleur, note la date et la source sur chaque document, fait des renvois croisés. Son bureau est nickel.", answer: "tr", difficulty: 2, explain: "Système d'organisation rigoureux, traçabilité, ordre = Travaillomane." },
+  { text: "Marc défend une décision impopulaire devant l'équipe : « Je sais que ça va déplaire, mais c'est ce qui est juste. Je l'assume. »", answer: "pe", difficulty: 2, explain: "Tenue de position malgré le coût social, référence à la justice = Persévérant." },
+  { text: "Dans son bureau, plantes vertes, photos de famille, parfum subtil. À ton arrivée : « Oh c'est toi ! Installe-toi, tu veux un café ? »", answer: "em", difficulty: 2, explain: "Décor chaleureux, accueil personnel, attention au confort = Empathique." },
+
+  // Niveau 3 : cas ambigus, deux types possibles, à départager finement
+  { text: "Sur Slack : « Salut !! Faut absolument qu'on bouge sur ce projet, ça va être ÉNORME, j'ai déjà parlé à 3 partenaires, ils sont chauds, on signe quand ?? »", answer: "pr", difficulty: 3, explain: "Hésitation possible Rebelle vs Promoteur. L'énergie et les exclamations évoquent Rebelle, mais « j'ai déjà parlé à 3 partenaires », « on signe quand » = orientation action concrète et closing = Promoteur." },
+  { text: "« J'ai préparé une présentation soignée pour le comité. Je pense qu'elle reflète bien mes convictions sur le sujet, j'aimerais votre retour. »", answer: "pe", difficulty: 3, explain: "Hésitation Travaillomane (préparation soignée) vs Persévérant (convictions). Le mot « convictions » + demande de retour sur le FOND tranchent pour Persévérant. Un Travaillomane aurait dit « j'aimerais valider la méthodologie »." },
+  { text: "Au coup de fil, voix calme et lente : « Bonjour. J'ai bien reçu votre message. J'aurais besoin de comprendre ce que vous attendez exactement de moi. Pouvez-vous m'envoyer un mail récapitulatif ? »", answer: "rv", difficulty: 3, explain: "Pourrait sembler Travaillomane (veut un récap structuré). Mais voix calme et lente + préférence pour l'écrit + besoin de comprendre seul = Rêveur. Le Travaillomane serait plus rapide et structurerait lui-même." },
+  { text: "Lors d'une présentation de chiffres, Tatiana : « C'est intéressant, mais ça ne me dit pas si on respecte nos engagements clients sur la qualité. »", answer: "pe", difficulty: 3, explain: "Pourrait passer pour Travaillomane (questionne les chiffres). Mais elle ramène à un ENGAGEMENT (valeur, principe) plutôt qu'à la méthodo = Persévérant. Le Travaillomane aurait questionné la source des données." },
+  { text: "Au resto pro, Léo : « Top, on prend le menu dégustation ! Ah et puis on partage tout, ça fait plus de goûts à essayer ! »", answer: "rb", difficulty: 3, explain: "Pourrait évoquer Empathique (partage). Mais « top », « plus de goûts à essayer », logique de découverte ludique = Rebelle. L'Empathique partagerait par attention à l'autre, pas par envie de variété." },
+  { text: "Réponse à une demande de feedback : « Globalement c'est bien. Tu pourrais peut-être renforcer la conclusion. Mais c'est subjectif, prends-le si ça te parle. »", answer: "em", difficulty: 3, explain: "Pourrait sembler Rêveur (ton mesuré). Mais le « si ça te parle », l'attention à ne pas blesser, la délicatesse de l'avis = Empathique. Le Rêveur serait plus direct sur le contenu." },
+  { text: "Dans une négo, Bruno : « On a pas la journée. Tu veux la version courte ou la version vraiment courte ? »", answer: "pr", difficulty: 3, explain: "Humour direct + pression temporelle + posture de décideur = Promoteur. Un Rebelle aurait été plus moqueur, moins instrumental." },
+  { text: "Yann, manager : « J'ai relu votre rapport 3 fois. Page 14, le tableau B : la méthode de calcul utilisée n'est pas cohérente avec celle annoncée page 6. On reprend ? »", answer: "tr", difficulty: 3, explain: "Vérification approfondie, repérage d'incohérence factuelle, exigence de cohérence méthodologique = Travaillomane. Pas Persévérant (pas de jugement de valeur)." },
+  { text: "Élise, qui a peu parlé pendant toute la réunion : « ... est-ce que je peux dire quelque chose ? J'ai une idée qui me vient depuis 20 minutes. »", answer: "rv", difficulty: 3, explain: "A laissé mûrir une idée intérieurement, demande la permission avant de prendre la parole, ne s'impose pas = Rêveur. L'Empathique aurait pris la parole avec attention aux autres, pas dans cette posture en retrait." },
+  { text: "« Bon ok, je veux bien essayer ton truc. MAIS si dans 2 semaines ça marche pas, on revient à l'ancienne méthode et tu me dois un café. »", answer: "rb", difficulty: 3, explain: "Acceptation à condition, ton joueur, pari-blague = Rebelle. Pas Promoteur (pas d'enjeu réel) ni Persévérant (pas d'opposition de fond)." },
 ];
 
+function shuffle(array) {
+  const a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let recDifficulty = 1; // 1 = facile (niv 1), 2 = standard (niv 1-2), 3 = expert (niv 1-3 avec poids vers niv 3)
+let recQuestionCount = 12;
+let recQuestions = [];
 let recIdx = 0;
+
+function startRec() {
+  let pool;
+  if (recDifficulty === 1) pool = recognitionPool.filter(q => q.difficulty === 1);
+  else if (recDifficulty === 2) pool = recognitionPool.filter(q => q.difficulty <= 2);
+  else pool = recognitionPool.filter(q => q.difficulty >= 2); // expert : que du subtil et ambigu
+  recQuestions = shuffle(pool).slice(0, Math.min(recQuestionCount, pool.length));
+  recIdx = 0;
+  renderRec();
+}
+
 function renderRec() {
-  const q = recognitionQuestions[recIdx];
   const card = document.getElementById("rec-card");
-  document.getElementById("rec-progress").style.width = (recIdx / recognitionQuestions.length) * 100 + "%";
+  if (recQuestions.length === 0) {
+    card.innerHTML = `
+      <h3>Configure ton exercice</h3>
+      <p style="color:var(--text)">Choisis la difficulté et lance une session de questions tirées au hasard.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:1rem 0">
+        <button class="diff-btn" data-d="1" style="padding:.8rem;background:${recDifficulty===1?'var(--tr)':'var(--soft)'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">Facile<br><small style="opacity:.7">Signaux nets</small></button>
+        <button class="diff-btn" data-d="2" style="padding:.8rem;background:${recDifficulty===2?'var(--tr)':'var(--soft)'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">Standard<br><small style="opacity:.7">Mix nets + subtils</small></button>
+        <button class="diff-btn" data-d="3" style="padding:.8rem;background:${recDifficulty===3?'var(--tr)':'var(--soft)'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">Expert<br><small style="opacity:.7">Cas ambigus</small></button>
+      </div>
+      <p style="color:var(--muted);font-size:.85rem">Pool total : ${recognitionPool.length} scénarios · Tu en auras ${recQuestionCount} tirés au hasard</p>
+      <div class="actions"><button onclick="startRec()">Démarrer →</button></div>
+    `;
+    card.querySelectorAll(".diff-btn").forEach(b => {
+      b.addEventListener("click", () => { recDifficulty = parseInt(b.dataset.d); renderRec(); });
+    });
+    return;
+  }
+  const q = recQuestions[recIdx];
+  document.getElementById("rec-progress").style.width = (recIdx / recQuestions.length) * 100 + "%";
   if (!q) {
     document.getElementById("rec-progress").style.width = "100%";
     card.innerHTML = `
-      <h3>Module terminé 🎉</h3>
-      <p style="color:var(--text)">Tu as parcouru les 12 mises en situation. Tu commences à repérer les marqueurs verbaux et comportementaux de chaque type.</p>
-      <div class="actions"><button onclick="recIdx=0;renderRec()">Recommencer</button></div>
+      <h3>Session terminée 🎉</h3>
+      <p style="color:var(--text)">Niveau : ${recDifficulty === 1 ? "Facile" : recDifficulty === 2 ? "Standard" : "Expert"} · ${recQuestions.length} questions.</p>
+      <div class="actions">
+        <button onclick="recQuestions=[];renderRec()">Nouvelle session</button>
+        <button onclick="startRec()">Rejouer même difficulté</button>
+      </div>
     `;
     return;
   }
   card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;margin-bottom:.5rem">
+      <span>Niveau ${recDifficulty} · Question ${recIdx + 1} / ${recQuestions.length}</span>
+      <span>Difficulté du scénario : ${"●".repeat(q.difficulty)}${"○".repeat(3-q.difficulty)}</span>
+    </div>
     <div class="scenario-text">${q.text}</div>
     <p style="color:var(--text)"><strong>De quel type s'agit-il ?</strong></p>
     <div class="options">
@@ -830,10 +904,11 @@ function renderInt() {
    MODULE 4 : PRATIQUER
    ============================================================ */
 
-const practiceQuestions = [
+const practicePool = [
+  // === Niveau 1 : situations classiques ===
   {
     context: "Sophie (Empathique) te dit : « Je ne sais pas... j'ai l'impression de ne pas être à la hauteur sur ce projet. »",
-    profile: "em",
+    profile: "em", difficulty: 1,
     options: [
       { text: "« Sophie, tu es une personne précieuse pour l'équipe, et ce que tu apportes compte. On va regarder ensemble ce qui te bloque, sans pression. »", ok: true, why: "Reconnaissance de la personne (besoin n°1), invitation au lien, pas de jugement = canal Nourricier parfait." },
       { text: "« Sophie, regarde les chiffres : tes résultats sont dans la moyenne, c'est objectif. »", ok: false, why: "Réponse logique à un besoin émotionnel = elle se sent encore plus seule." },
@@ -842,7 +917,7 @@ const practiceQuestions = [
   },
   {
     context: "Marc (Travaillomane) demande : « J'ai vu que le délai est passé de 6 à 7 semaines. Pourquoi ? »",
-    profile: "tr",
+    profile: "tr", difficulty: 1,
     options: [
       { text: "« On a ajouté une étape de validation sécurité (impératif réglementaire) qui prend 5 jours ouvrés. Voici le planning révisé. »", ok: true, why: "Fait, cause logique, document mis à jour = canal Interrogatif logique respecté." },
       { text: "« Bah tu sais comment c'est, ça arrive. »", ok: false, why: "Imprécision = le Travaillomane perd confiance en ta rigueur." },
@@ -851,7 +926,7 @@ const practiceQuestions = [
   },
   {
     context: "Pierre (Persévérant) te dit : « Je ne signerai pas tant que l'équipe ne sera pas consultée. C'est une question de respect. »",
-    profile: "pe",
+    profile: "pe", difficulty: 1,
     options: [
       { text: "« Allez, signe, on n'a pas le temps. »", ok: false, why: "Mépriser ses valeurs = il s'arc-boute encore plus." },
       { text: "« Pierre, je comprends ton attachement à ce principe et je le partage. Je te propose qu'on organise la consultation cette semaine, et je te tiens informé du résultat avant signature. Ça te convient ? »", ok: true, why: "Reconnaissance de la conviction, partage de la valeur, plan d'action concret = canal Interrogatif sur les opinions." },
@@ -860,7 +935,7 @@ const practiceQuestions = [
   },
   {
     context: "Tu confies un dossier à Anna (Rêveuse) en open space, devant toute l'équipe.",
-    profile: "rv",
+    profile: "rv", difficulty: 1,
     options: [
       { text: "Lui demander à voix haute : « Anna, t'en penses quoi tout de suite ? »", ok: false, why: "Surprise + groupe = blocage total. Le Rêveur a besoin de temps et de calme." },
       { text: "Lui envoyer un message privé : « Anna, je voudrais te confier le dossier X. On peut se voir 15 min en salle calme demain matin ? Je t'envoie déjà les éléments par mail. »", ok: true, why: "Écrit, 1-to-1, espace calme, temps de préparation = idéal pour un Rêveur." },
@@ -869,7 +944,7 @@ const practiceQuestions = [
   },
   {
     context: "Manu (Rebelle) lance en réunion : « Cette procédure est NULLE, c'est qui le génie qui a pondu ça ?? »",
-    profile: "rb",
+    profile: "rb", difficulty: 1,
     options: [
       { text: "« Manu, ton attitude est inacceptable, restons professionnels. »", ok: false, why: "Recadrer sec = le Rebelle se braque encore plus." },
       { text: "« Haha t'as raison, c'est un peu rude — on remixe ça ensemble ? T'as 3 idées de pirate à proposer ? »", ok: true, why: "Accueillir l'énergie, jouer avec, inviter à la créativité = canal Émotif / ludique parfait." },
@@ -878,16 +953,63 @@ const practiceQuestions = [
   },
   {
     context: "Nico (Promoteur) te dit : « Bon, ça avance pas ton truc. Je commence à me demander si je continue. »",
-    profile: "pr",
+    profile: "pr", difficulty: 1,
     options: [
       { text: "« Allez, encore un peu de patience, j'ai besoin de temps... »", ok: false, why: "Patience = mot interdit pour un Promoteur." },
       { text: "« Nico, deal : je te livre 3 résultats concrets vendredi 18h. Si t'es pas satisfait, tu sors. Cap ou pas cap ? »", ok: true, why: "Action, deal, défi, ultimatum sportif = canal Directif parfait, tu nourris son besoin d'intensité." },
       { text: "« Mais tu sais, on est tous fatigués, c'est dur pour tout le monde émotionnellement... »", ok: false, why: "Registre émotionnel = il décroche immédiatement." },
     ],
   },
+
+  // === Niveau 2 : situations plus subtiles ===
+  {
+    context: "Tu reçois ce mail : « Bonjour, suite à votre proposition, j'ai 4 questions techniques : 1) Méthode de calcul, 2) Source des données, 3) Hypothèses, 4) Sensibilité. Pouvez-vous étayer ? Cordialement. »",
+    profile: "tr", difficulty: 2,
+    options: [
+      { text: "« Hello ! Trop content de votre intérêt 😊 Je vous appelle ce soir pour en papoter ! »", ok: false, why: "Tu réponds en canal Émotif à un Travaillomane qui demande du factuel : tu perds la relation." },
+      { text: "« Bonjour, voici en pièce jointe une note de 4 pages répondant à vos 4 questions, dans l'ordre. Je reste disponible pour toute précision. »", ok: true, why: "Réponse en miroir, structure respectée, format soigné = tu nourris son besoin de structure et de reconnaissance du travail." },
+      { text: "« Faites-moi confiance, c'est fiable. »", ok: false, why: "Aucune source, aucune démonstration = rupture avec un Travaillomane." },
+    ],
+  },
+  {
+    context: "Tu refuses la proposition d'un Empathique. Comment formuler ?",
+    profile: "em", difficulty: 2,
+    options: [
+      { text: "« Non, je ne valide pas, ce n'est pas pertinent. »", ok: false, why: "Refus sec sur la personne (« je ne valide pas ») = blessure profonde pour un Empathique. Il aura du mal à revenir vers toi." },
+      { text: "« Je te remercie d'avoir proposé ça, j'ai bien vu l'énergie que tu as mise dedans. Sur ce projet précis, je n'arrive pas à dire oui — peut-être plus tard sur autre chose ? On en parle ? »", ok: true, why: "Tu reconnais la PERSONNE (l'effort, pas seulement l'idée), tu sépares le refus de la valeur d'elle, tu maintiens la porte ouverte = canal Nourricier respecté même dans un non." },
+      { text: "« Non, c'est trop coûteux pour le ROI attendu. »", ok: false, why: "Argument logique recevable pour un Travaillomane, mais à un Empathique tu donnes l'impression de réduire son idée à une feuille Excel." },
+    ],
+  },
+  {
+    context: "Un Rêveur ne rend pas son livrable promis pour hier. Tu fais quoi ?",
+    profile: "rv", difficulty: 2,
+    options: [
+      { text: "Mail public à toute l'équipe en copie : « Ton livrable est en retard, c'est inacceptable. »", ok: false, why: "Public + ton sec = paralysie totale du Rêveur. Tu obtiens encore moins." },
+      { text: "Tu vas le voir en tête-à-tête, calmement : « Je remarque que le livrable n'est pas arrivé. J'ai besoin de l'avoir mercredi 17h. Qu'est-ce qui te bloque ? Tu peux me le dire, on regarde ce qu'il faut. »", ok: true, why: "1-to-1, ton calme, demande directe et claire, ouverture sur le blocage = canal Directif bienveillant. Tu lui donnes un cadre clair sans l'agresser." },
+      { text: "Tu lances : « On va faire ça en équipe en réunion impromptue tout de suite ! »", ok: false, why: "Réunion impromptue + groupe = stress maximum. Il va se figer encore plus." },
+    ],
+  },
+  {
+    context: "Tu présentes une nouveauté à un Promoteur qui te dit : « Bof, c'est pas folichon ton truc. »",
+    profile: "pr", difficulty: 2,
+    options: [
+      { text: "« Mais si, regarde toutes les fonctionnalités... » (tu détailles)", ok: false, why: "Tu argumentes en mode catalogue = le Promoteur s'ennuie davantage." },
+      { text: "« OK, alors je te propose un défi : tu choisis 2 concurrents, je te démontre en 10 min qu'on les bat sur ton critère le plus important. Cap ou pas ? »", ok: true, why: "Tu transformes l'objection en challenge sportif, action immédiate, enjeu = pile son besoin d'intensité." },
+      { text: "« Je suis vraiment déçu que ça ne te plaise pas... »", ok: false, why: "Affect = il décroche complètement." },
+    ],
+  },
+  {
+    context: "Au standup, Theo (Rebelle, 1er degré de stress) lève les yeux au ciel quand tu parles. Tu fais quoi ?",
+    profile: "rb", difficulty: 2,
+    options: [
+      { text: "Tu l'ignores et tu continues comme si de rien.", ok: false, why: "Il va monter d'un cran (2e degré : sabotage léger). À traiter tôt." },
+      { text: "Tu t'arrêtes et tu le recadres devant tout le monde : « Theo, ton comportement est inacceptable. »", ok: false, why: "Public + autorité = il se braque ouvertement. Tu crées un conflit que tu vas porter." },
+      { text: "Après le standup, en 1-to-1 et avec humour : « Eh dis-donc, je t'ai senti pas à fond ce matin. Qu'est-ce qui te gave dans le truc ? Vraiment, je veux savoir. »", ok: true, why: "Tu nommes ce que tu as vu, sans accuser, avec une pointe d'humour, et tu accueilles son ressenti. Tu renourris son besoin de contact ludique et tu désamorces le stress." },
+    ],
+  },
   {
     context: "Réunion à 4 : Sophie (EM), Marc (TR), Pierre (PE), Manu (RB). Tu ouvres la réunion.",
-    profile: "mix",
+    profile: "mix", difficulty: 2,
     options: [
       { text: "« Merci à tous d'être là (EM). J'ai préparé un ordre du jour structuré (TR), avec un point sur nos engagements clients qui sont en jeu (PE), et j'ai prévu une session créa fun à la fin (RB). On y va ? »", ok: true, why: "Chaque type entend son canal : reconnaissance, structure, valeurs, fun = tu adresses les 4 besoins en une phrase." },
       { text: "« Allez, on attaque, j'ai pas la matinée. »", ok: false, why: "Tu parles uniquement au Promoteur (absent ici). Tu froisses tout le monde." },
@@ -895,27 +1017,127 @@ const practiceQuestions = [
     ],
   },
   {
-    context: "Tu reçois ce mail : « Bonjour, suite à votre proposition, j'ai 4 questions techniques : 1) Méthode de calcul, 2) Source des données, 3) Hypothèses, 4) Sensibilité. Pouvez-vous étayer ? Cordialement. »",
-    profile: "tr",
+    context: "Tu dois annoncer à Pierre (Persévérant) que la direction a tranché contre son avis sur un sujet de fond.",
+    profile: "pe", difficulty: 2,
     options: [
-      { text: "« Hello ! Trop content de votre intérêt 😊 Je vous appelle ce soir pour en papoter ! »", ok: false, why: "Tu réponds en canal Émotif à un Travaillomane qui demande du factuel : tu perds la relation." },
-      { text: "« Bonjour, voici en pièce jointe une note de 4 pages répondant à vos 4 questions, dans l'ordre. Je reste disponible pour toute précision. »", ok: true, why: "Réponse en miroir, structure respectée, format soigné = tu nourris son besoin de structure et de reconnaissance du travail." },
-      { text: "« Faites-moi confiance, c'est fiable. »", ok: false, why: "Aucune source, aucune démonstration = rupture avec un Travaillomane." },
+      { text: "« Pierre, désolé, c'est tranché, c'est comme ça. »", ok: false, why: "Lapidaire = il a l'impression qu'on méprise sa position." },
+      { text: "« Pierre, je voulais te dire en personne : la direction a tranché dans l'autre sens. Je tiens à te dire que j'ai porté tes arguments — la qualité, l'engagement client — et qu'ils ont été entendus, même s'ils n'ont pas prévalu cette fois. Tu veux en parler ? »", ok: true, why: "Tu reconnais explicitement ses convictions, tu prouves que tu les as défendues, tu laisses la porte ouverte au dialogue = tu respectes son besoin de reconnaissance des convictions." },
+      { text: "« T'as perdu cette fois, faut savoir lâcher Pierre. »", ok: false, why: "Tu invalides ses valeurs avec un ton sportif = il entre en croisade." },
+    ],
+  },
+
+  // === Niveau 3 : situations complexes, profils en stress, canaux croisés ===
+  {
+    context: "Sophie (EM, dans son 2e degré de stress) te dit, le regard fuyant : « Je n'arrive plus à rien, je crois que je vais demander à changer de poste, je vous fais perdre du temps. »",
+    profile: "em", difficulty: 3,
+    options: [
+      { text: "« Mais non, tu fais du bon boulot, regarde tes résultats du mois ! »", ok: false, why: "Tu donnes des faits (canal Travaillomane) à un besoin émotionnel. Et tu nies son ressenti, ça augmente le stress." },
+      { text: "« Sophie, ce que je vois c'est que tu es en grande difficulté en ce moment. Je tiens à toi en tant que personne, indépendamment de ce que tu produis. Est-ce qu'on peut s'asseoir 30 min, pas pour résoudre, juste pour que tu me dises comment tu te sens vraiment ? »", ok: true, why: "Tu reconnais la PERSONNE (« je tiens à toi »), tu sépares la valeur d'elle de sa production (le coeur du 2e degré Empathique), tu n'agis pas tout de suite — tu nourris d'abord son besoin n°1. C'est ce qui peut faire sortir du 2e degré." },
+      { text: "« Bon, on en parle quand t'as repris pied. Reviens me voir. »", ok: false, why: "Tu lui dis qu'elle doit aller mieux toute seule = abandon perçu. Pour un Empathique en stress, c'est la pire réponse." },
+    ],
+  },
+  {
+    context: "Marc (TR, 1er degré de stress, sur-contrôle) reprend trois fois ton mail. Il finit par t'écrire : « Ta phrase sur le délai est imprécise. Quelle date exactement ? Et la formulation 'environ' n'est pas acceptable. »",
+    profile: "tr", difficulty: 3,
+    options: [
+      { text: "« Ah Marc, sois pas si rigide, on n'est pas à 3 jours près. »", ok: false, why: "Tu juges sa rigueur = tu actives son 2e degré (« personne n'est sérieux ici »). Il monte d'un cran." },
+      { text: "« Bien noté Marc. Date précise : 14 mars 18h. Et je remplace 'environ' par 'au plus tard le' dans le document. Je te renvoie la version corrigée à 17h. »", ok: true, why: "Tu prends la remarque comme une amélioration de qualité (sa norme), tu donnes la précision demandée, tu cadres dans le temps. Tu nourris son besoin de structure et tu réduis le stress." },
+      { text: "« Je vais demander à mon assistante. »", ok: false, why: "Tu déportes = il comprend que tu n'as pas la maîtrise de TON dossier. Confiance détruite." },
+    ],
+  },
+  {
+    context: "Hugo (Rêveur, 2e degré) ne répond plus aux mails depuis 8 jours. Il vient au bureau, accomplit ses tâches mécaniquement. Tu sens qu'il a décroché.",
+    profile: "rv", difficulty: 3,
+    options: [
+      { text: "Tu organises une grande discussion d'équipe pour qu'on l'aide collectivement.", ok: false, why: "Le pire pour un Rêveur en retrait : le mettre face à un groupe. Il va se replier encore plus." },
+      { text: "Tu lui envoies un mail très clair : « Hugo, j'aimerais qu'on prenne 30 minutes ensemble lundi 10h, dans la salle calme du 4e. Sujet : ce sur quoi tu travailles, et ce qui pourrait t'aider. Pas besoin de te préparer, on regarde ensemble. Confirme-moi par mail si OK. »", ok: true, why: "Écrit (son canal de réception), demande directive et bienveillante, cadre précis (lieu, heure, durée), pas d'agression (« on regarde ensemble »), validation simple. Tu lui offres le contexte exact dont il a besoin pour sortir du retrait." },
+      { text: "Tu attends qu'il vienne te parler de lui-même.", ok: false, why: "Un Rêveur ne vient PAS. Il attend qu'on lui demande explicitement. L'attente passive aggrave." },
+    ],
+  },
+  {
+    context: "Toi tu es Empathique (Base). Tu dois faire un cold call commercial à Nico (Promoteur, DG). 90 secondes.",
+    profile: "pr", difficulty: 3,
+    options: [
+      { text: "« Bonjour, j'espère ne pas vous déranger, j'aimerais vraiment qu'on prenne un moment pour mieux se connaître et voir si... »", ok: false, why: "C'est ton canal naturel (Nourricier) mais c'est exactement ce qui FAIT FUIR un Promoteur. Tu dois sortir de ton canal pour entrer dans le sien." },
+      { text: "« Nico, Camille de SoftCorp. J'ai aidé 3 DG comme vous à signer 2M€ de deals en plus en 6 mois. 90 secondes pour vous dire si c'est jouable pour vous, ou je raccroche. C'est parti ? »", ok: true, why: "Tu adoptes son canal (Directif), tu donnes un chiffre concret, tu poses un cadre court avec sortie possible, tu invites à l'action. Pour un Empathique c'est inconfortable — c'est précisément ce qu'il faut faire. Adapter le canal sans changer son fond." },
+      { text: "« Bonjour, j'ai préparé une note détaillée que j'aimerais vous présenter, elle fait 12 pages... »", ok: false, why: "Canal Travaillomane (structure et détail) imposé à un Promoteur = il décroche en 3 secondes." },
+    ],
+  },
+  {
+    context: "Tu es en réunion. Sophie (EM) s'exprime sur un sujet sensible. Pierre (PE) la coupe sèchement : « C'est pas le sujet, on perd du temps. » Sophie s'effondre intérieurement, Pierre se renfrogne. Tu fais quoi ?",
+    profile: "mix", difficulty: 3,
+    options: [
+      { text: "« Pierre, c'était dur ton intervention. Sophie, ce que tu disais m'intéresse, peux-tu continuer ? »", ok: false, why: "Tu prends parti contre Pierre = il s'arc-boute (PE en stress). Sophie est sauvée mais Pierre est perdu, et tu casses la dynamique de groupe." },
+      { text: "« Pierre, je note ta vigilance sur le timing — c'est un sujet réel et tu y tiens. Sophie, ce que tu apportais éclaire le sujet d'un angle qu'on n'a pas encore couvert. Sophie, finis ton point en 2 minutes, et Pierre, ensuite je te laisse cadrer la suite. »", ok: true, why: "Tu reconnais l'INTENTION de Pierre (rigueur, valeur) sans cautionner la forme, tu valorises la PERSONNE de Sophie tout en cadrant son temps, et tu redonnes un rôle à Pierre. Tu nourris les besoins des deux, et tu reprends le pilotage." },
+      { text: "Tu laisses passer, c'est entre eux deux.", ok: false, why: "Tu abandonnes l'animation. Sophie se ferme pour la réunion, Pierre repart sur sa lancée. Pertes des deux côtés." },
+    ],
+  },
+  {
+    context: "Tu travailles avec un client Travaillomane qui te dit : « J'ai 3 préoccupations sur votre offre : 1) la sécurité des données, 2) la conformité RGPD, 3) le SLA. »",
+    profile: "tr", difficulty: 2,
+    options: [
+      { text: "« Très bonne question ! Sur le 3, on a 99,9% d'uptime, sur le 2 on est conformes, et sur le 1, faites-nous confiance. »", ok: false, why: "Tu mélanges l'ordre (sa structure 1-2-3), tu finis par « faites confiance » = anti-Travaillomane. Note basse." },
+      { text: "« Très bien, je reprends dans votre ordre. (1) Sécurité : ISO 27001 + audit annuel par X. (2) RGPD : DPO dédié, registre disponible. (3) SLA : 99,9% sur P1, pénalités contractuelles. Je vous envoie un document de 3 pages avec les preuves pour chaque point. C'est cohérent ? »", ok: true, why: "Tu reprends SON ordre, tu donnes du factuel par point, tu engages un livrable structuré, et tu fais valider. Canal Interrogatif logique respecté à 100%." },
+      { text: "« Ne vous inquiétez pas, tout est carré, on est les meilleurs du marché. »", ok: false, why: "Slogan sans preuve, ton commercial = méfiance immédiate du Travaillomane." },
+    ],
+  },
+  {
+    context: "Manu (Rebelle) propose une idée délirante en réunion qui ne tient pas la route business. Tu ne veux pas l'éteindre mais tu dois cadrer.",
+    profile: "rb", difficulty: 3,
+    options: [
+      { text: "« Manu, soyons sérieux, ça ne marchera jamais. »", ok: false, why: "Tu éteins le Rebelle = il décroche et il sabote la suite. Et tu perds la créativité qu'il apporte." },
+      { text: "« Manu, j'ADORE l'énergie. Pour rendre ça vendable, il manque 2 morceaux : un business model et une roadmap. Tu prends le délire à 2 et tu reviens avec une V2 vendredi ? Je te paie un déjeuner si ça tient debout. »", ok: true, why: "Tu accueilles l'énergie (canal Émotif), tu donnes un cadre stimulant (défi + récompense ludique), tu lui donnes un rôle créatif sans l'étouffer. Pile son besoin." },
+      { text: "« Peux-tu chiffrer ton hypothèse avec une analyse de marché ? »", ok: false, why: "Demande Travaillomane sur du Rebelle = il décroche en 2 secondes." },
     ],
   },
 ];
 
+let praDifficulty = 1;
+let praQuestionCount = 10;
+let praQuestions = [];
 let praIdx = 0;
+
+function startPra() {
+  let pool;
+  if (praDifficulty === 1) pool = practicePool.filter(q => q.difficulty === 1);
+  else if (praDifficulty === 2) pool = practicePool.filter(q => q.difficulty <= 2);
+  else pool = practicePool.filter(q => q.difficulty >= 2);
+  praQuestions = shuffle(pool).slice(0, Math.min(praQuestionCount, pool.length));
+  praIdx = 0;
+  renderPra();
+}
+
 function renderPra() {
-  const q = practiceQuestions[praIdx];
   const card = document.getElementById("pra-card");
-  document.getElementById("pra-progress").style.width = (praIdx / practiceQuestions.length) * 100 + "%";
+  if (praQuestions.length === 0) {
+    card.innerHTML = `
+      <h3>Configure ta session de pratique</h3>
+      <p style="color:var(--text)">Choisis la difficulté. Les questions seront tirées au hasard.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:1rem 0">
+        <button class="pdiff-btn" data-d="1" style="padding:.8rem;background:${praDifficulty===1?'var(--tr)':'var(--soft)'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">Facile<br><small style="opacity:.7">Cas classiques</small></button>
+        <button class="pdiff-btn" data-d="2" style="padding:.8rem;background:${praDifficulty===2?'var(--tr)':'var(--soft)'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">Standard<br><small style="opacity:.7">Mix classique + subtil</small></button>
+        <button class="pdiff-btn" data-d="3" style="padding:.8rem;background:${praDifficulty===3?'var(--tr)':'var(--soft)'};color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600">Expert<br><small style="opacity:.7">Stress, canaux croisés</small></button>
+      </div>
+      <p style="color:var(--muted);font-size:.85rem">Pool total : ${practicePool.length} mises en situation · Tu en auras ${praQuestionCount} tirées au hasard</p>
+      <div class="actions"><button onclick="startPra()">Démarrer →</button></div>
+    `;
+    card.querySelectorAll(".pdiff-btn").forEach(b => {
+      b.addEventListener("click", () => { praDifficulty = parseInt(b.dataset.d); renderPra(); });
+    });
+    return;
+  }
+  const q = praQuestions[praIdx];
+  document.getElementById("pra-progress").style.width = (praIdx / praQuestions.length) * 100 + "%";
   if (!q) {
     document.getElementById("pra-progress").style.width = "100%";
     card.innerHTML = `
-      <h3>Bravo, tu as terminé la pratique 🎉</h3>
-      <p style="color:var(--text)">Rappel clé du PCM : ce qui change, ce n'est pas <em>ce que</em> tu dis, c'est <em>comment</em> tu le dis et dans quel canal. Adapte ton canal, garde ton fond.</p>
-      <div class="actions"><button onclick="praIdx=0;renderPra()">Recommencer</button></div>
+      <h3>Session terminée 🎉</h3>
+      <p style="color:var(--text)">Niveau : ${praDifficulty === 1 ? "Facile" : praDifficulty === 2 ? "Standard" : "Expert"} · ${praQuestions.length} situations.</p>
+      <p style="color:var(--text)">Rappel : ce qui change, ce n'est pas <em>ce que</em> tu dis, c'est <em>comment</em> tu le dis et dans quel canal.</p>
+      <div class="actions">
+        <button onclick="praQuestions=[];renderPra()">Nouvelle session</button>
+        <button onclick="startPra()">Rejouer même difficulté</button>
+      </div>
     `;
     return;
   }
@@ -923,6 +1145,10 @@ function renderPra() {
     ? `<span class="signal-tag">Plusieurs types simultanément</span>`
     : `<span class="badge ${q.profile}">${profiles[q.profile].name.toUpperCase()}</span> ${profiles[q.profile].nick}`;
   card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;margin-bottom:.5rem">
+      <span>Niveau ${praDifficulty} · Question ${praIdx + 1} / ${praQuestions.length}</span>
+      <span>Difficulté : ${"●".repeat(q.difficulty)}${"○".repeat(3-q.difficulty)}</span>
+    </div>
     <div class="scenario-text">${badge}<br><br>${q.context}</div>
     <p style="color:var(--text)"><strong>Ta meilleure réponse ?</strong></p>
     <div class="options">
