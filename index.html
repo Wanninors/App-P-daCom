@@ -235,6 +235,9 @@
   <button data-mod="reconnaitre">2. Reconnaître</button>
   <button data-mod="introduire">3. Introduire</button>
   <button data-mod="pratiquer">4. Pratiquer</button>
+  <button data-mod="monprofil">5. Mon profil</button>
+  <button data-mod="conversation">6. Conversation</button>
+  <button data-mod="aller-plus-loin">7. Aller + loin</button>
   <div class="score">Score : <span id="score">0</span> / <span id="total">0</span></div>
 </nav>
 
@@ -301,6 +304,52 @@
   </div>
   <div class="progress"><div class="progress-bar" id="pra-progress" style="width:0%"></div></div>
   <div class="scenario" id="pra-card"></div>
+</section>
+
+<!-- MODULE 5 : MON PROFIL -->
+<section class="module" id="monprofil">
+  <div class="intro">
+    <h2>Découvre ton profil dominant</h2>
+    <p>12 questions rapides. Choisis l'option qui te ressemble le plus, même si plusieurs te conviennent. À la fin, tu obtiens ton profil dominant + secondaire et tes axes de progression.</p>
+  </div>
+  <div class="progress"><div class="progress-bar" id="self-progress" style="width:0%"></div></div>
+  <div class="scenario" id="self-card"></div>
+</section>
+
+<!-- MODULE 6 : CONVERSATION SIMULEE -->
+<section class="module" id="conversation">
+  <div class="intro">
+    <h2>Conversation simulée</h2>
+    <p>Choisis avec quel profil tu veux t'entraîner. Tu auras un échange de 5 tours. À chaque message, sélectionne ta réponse — ton « niveau de rapport » avec l'interlocuteur évolue selon tes choix.</p>
+  </div>
+  <div class="scenario" id="chat-card"></div>
+</section>
+
+<!-- MODULE 7 : ALLER PLUS LOIN -->
+<section class="module" id="aller-plus-loin">
+  <div class="intro">
+    <h2>Au-delà du DISC : Process Com & MBTI</h2>
+    <p>Le DISC est un excellent point d'entrée, mais d'autres modèles vont plus loin. Voici les deux plus utiles à connaître.</p>
+  </div>
+
+  <details open>
+    <summary>Process Communication Model (PCM) — 6 types</summary>
+    <p>Créé par Taibi Kahler pour la NASA, le PCM identifie 6 types de personnalité qui coexistent en chacun de nous, avec une « base » dominante et une « phase » qui peut évoluer. Chaque type a un canal de communication préféré et des besoins psychologiques spécifiques.</p>
+    <div id="pcm-grid" class="grid"></div>
+  </details>
+
+  <details>
+    <summary>MBTI — 16 types via 4 dichotomies</summary>
+    <p>Le MBTI (Myers-Briggs) classe les personnalités sur 4 axes binaires, donnant 16 combinaisons. Très utile pour comprendre comment quelqu'un perçoit le monde et prend ses décisions.</p>
+    <div id="mbti-axes" class="grid"></div>
+    <div id="mbti-types"></div>
+  </details>
+
+  <details>
+    <summary>Tableau comparatif DISC ↔ PCM ↔ MBTI</summary>
+    <p>Aucune équivalence n'est parfaite, mais ces correspondances aident à passer d'un modèle à l'autre.</p>
+    <div id="cross-table"></div>
+  </details>
 </section>
 
 </main>
@@ -731,6 +780,469 @@ function renderPra() {
   });
 }
 
+/* ============== MODULE 5 : AUTO-EVALUATION ============== */
+
+const selfQuestions = [
+  { q: "En réunion, ma tendance naturelle est de :",
+    a: { D: "Pousser pour qu'on décide vite", I: "Lancer des idées et embarquer le groupe", S: "Écouter chacun et chercher le consensus", C: "Vérifier les données avant de me prononcer" } },
+  { q: "Mon style de prise de parole :",
+    a: { D: "Direct, parfois cassant", I: "Animé, chaleureux, plein d'anecdotes", S: "Posé, à l'écoute, mesuré", C: "Précis, structuré, factuel" } },
+  { q: "Quand je suis stressé(e), je deviens :",
+    a: { D: "Impatient(e), tranchant(e)", I: "Émotif(ve), bavard(e), désorganisé(e)", S: "Replié(e), passif(ve), je m'efface", C: "Critique, perfectionniste, je rumine" } },
+  { q: "Ma plus grande peur est :",
+    a: { D: "Perdre le contrôle ou échouer", I: "Être rejeté(e) ou ignoré(e)", S: "Le conflit ou un changement brutal", C: "Avoir tort ou être imprécis(e)" } },
+  { q: "Au travail, j'aime surtout :",
+    a: { D: "Atteindre des objectifs ambitieux", I: "Échanger, créer, inspirer", S: "Travailler en équipe stable", C: "Approfondir un sujet, le maîtriser" } },
+  { q: "Mon rythme préféré :",
+    a: { D: "Rapide, sous pression", I: "Variable, selon l'inspiration", S: "Régulier, sans précipitation", C: "Méthodique, par étapes" } },
+  { q: "Face à un imprévu :",
+    a: { D: "Je tranche immédiatement et j'avance", I: "Je rebondis, j'improvise", S: "Je m'adapte calmement, en équipe", C: "Je prends du recul pour analyser" } },
+  { q: "Mon entourage me décrirait comme :",
+    a: { D: "Énergique, exigeant(e), franc(he)", I: "Sociable, enthousiaste, expressif(ve)", S: "Fidèle, calme, attentionné(e)", C: "Sérieux(se), rigoureux(se), réfléchi(e)" } },
+  { q: "Je donne mon meilleur quand :",
+    a: { D: "On me laisse autonome avec un objectif clair", I: "Je peux échanger librement et être reconnu(e)", S: "L'ambiance est saine et bienveillante", C: "J'ai le temps et l'info nécessaires" } },
+  { q: "Mon point faible probable :",
+    a: { D: "Manque d'écoute ou de patience", I: "Manque de rigueur ou de focus", S: "Difficulté à dire non, lenteur à décider", C: "Trop critique ou paralysé(e) par les détails" } },
+  { q: "Ma façon de gérer un conflit :",
+    a: { D: "Je l'affronte directement", I: "J'essaie de désamorcer avec humour", S: "J'évite et je cherche l'apaisement", C: "J'analyse les faits et argumente" } },
+  { q: "Ce qui me motive le plus :",
+    a: { D: "Gagner, atteindre, dépasser", I: "Reconnaissance, plaisir, créativité", S: "Sentiment d'utilité, stabilité, lien", C: "Compréhension, expertise, qualité" } },
+];
+
+let selfIdx = 0;
+let selfScores = { D: 0, I: 0, S: 0, C: 0 };
+
+function renderSelf() {
+  const q = selfQuestions[selfIdx];
+  const card = document.getElementById("self-card");
+  document.getElementById("self-progress").style.width = (selfIdx / selfQuestions.length) * 100 + "%";
+
+  if (!q) {
+    document.getElementById("self-progress").style.width = "100%";
+    const total = selfScores.D + selfScores.I + selfScores.S + selfScores.C;
+    const sorted = Object.entries(selfScores).sort((a, b) => b[1] - a[1]);
+    const dom = sorted[0][0];
+    const sec = sorted[1][0];
+    const bars = ["D","I","S","C"].map(k => {
+      const pct = total ? Math.round((selfScores[k] / total) * 100) : 0;
+      return `
+        <div style="margin-bottom:.8rem">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.2rem">
+            <span><span class="badge ${k}">${k}</span> ${profiles[k].name}</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="progress" style="margin:0"><div class="progress-bar" style="width:${pct}%;background:${k==='D'?'var(--d)':k==='I'?'var(--i)':k==='S'?'var(--s)':'var(--c)'}"></div></div>
+        </div>`;
+    }).join("");
+    card.innerHTML = `
+      <h3>Ton profil</h3>
+      <p style="color:var(--text);font-size:1.2rem">Dominant : <span class="badge ${dom}">${dom}</span> <strong>${profiles[dom].name}</strong> · Secondaire : <span class="badge ${sec}">${sec}</span> ${profiles[sec].name}</p>
+      ${bars}
+      <div class="feedback ok" style="margin-top:1.5rem">
+        <strong>Force principale</strong>
+        ${profiles[dom].do[0]} · ${profiles[dom].do[1]}
+      </div>
+      <div class="feedback ko">
+        <strong>Vigilance / point d'attention</strong>
+        Tu peux avoir tendance à : ${profiles[dom].dont[0].toLowerCase()}.
+      </div>
+      <p style="color:var(--text);margin-top:1.5rem"><em>Pour mieux communiquer avec tes opposés (les profils où tu as le moins de points), revois le module 1 sur ces profils et applique-toi à les pratiquer.</em></p>
+      <div class="actions"><button onclick="selfIdx=0;selfScores={D:0,I:0,S:0,C:0};renderSelf()">Refaire le test</button></div>
+    `;
+    return;
+  }
+
+  const keys = ["D","I","S","C"];
+  // Shuffle order so the user doesn't memorise positions
+  const order = keys.slice().sort(() => Math.random() - 0.5);
+  card.innerHTML = `
+    <h3>Question ${selfIdx + 1} / ${selfQuestions.length}</h3>
+    <p style="color:var(--text);font-size:1.1rem"><strong>${q.q}</strong></p>
+    <div class="options">
+      ${order.map(k => `<button data-k="${k}">${q.a[k]}</button>`).join("")}
+    </div>
+  `;
+  card.querySelectorAll(".options button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selfScores[btn.dataset.k]++;
+      selfIdx++;
+      renderSelf();
+    });
+  });
+}
+
+/* ============== MODULE 6 : CONVERSATION SIMULEE ============== */
+
+const chatScenarios = {
+  D: {
+    setting: "Tu rencontres Marc, directeur opérationnel (profil D). Il vient d'arriver dans ton bureau, debout, en train de regarder sa montre.",
+    turns: [
+      {
+        bot: "Bon, j'ai 8 minutes. Tu voulais me parler de ton projet, c'est ça ? Vas-y.",
+        options: [
+          { text: "Objectif : -15% de délai de livraison en 3 mois. Coût : 30k€. ROI estimé : 6 mois. Tu veux qu'on regarde le plan ?", score: 2, react: "Marc hoche la tête. « OK, ça me parle. Continue. »" },
+          { text: "Alors, je voulais te raconter le contexte d'abord, parce qu'il y a plein de choses qui ont mené à ce projet…", score: -2, react: "Marc soupire et regarde encore sa montre. « Abrège, on n'a pas la matinée. »" },
+          { text: "Bonjour Marc, comment vas-tu aujourd'hui ? Tu as bien dormi ?", score: -2, react: "Marc fronce les sourcils. « Sérieusement ? Tu m'as fait venir pour ça ? »" },
+        ],
+      },
+      {
+        bot: "Et le risque principal, c'est quoi ? Je veux pas qu'on se plante.",
+        options: [
+          { text: "C'est compliqué à dire, il y a beaucoup de variables, on verra à l'usage…", score: -2, react: "Marc lève les yeux. « Donc tu ne sais pas. Je ne signe pas. »" },
+          { text: "Deux risques : dépendance fournisseur (couverte par contrat) et adoption interne (plan formation en place). Probabilité résiduelle faible.", score: 2, react: "Marc note rapidement. « Bien. Tu y as pensé. »" },
+          { text: "Tu vas voir, ça va bien se passer, fais-moi confiance.", score: -1, react: "Marc : « Je ne fonctionne pas à la confiance. Je fonctionne aux chiffres. »" },
+        ],
+      },
+      {
+        bot: "Tu as besoin de quoi pour lancer ?",
+        options: [
+          { text: "Ton GO et un budget validé d'ici vendredi. Le reste, je gère.", score: 2, react: "Marc sourit légèrement. « OK, ça c'est clair. »" },
+          { text: "On pourrait en reparler la semaine prochaine avec toute l'équipe pour s'aligner…", score: -1, react: "Marc : « Pourquoi attendre ? Décide maintenant. »" },
+          { text: "Je voudrais une réunion de 2h avec toi pour qu'on étudie chaque sous-point.", score: -2, react: "Marc : « Non. Donne-moi une synthèse. Une seule page. »" },
+        ],
+      },
+      {
+        bot: "Bon, t'es sûr de toi sur le délai ?",
+        options: [
+          { text: "Oui. Je m'engage personnellement. Tu auras un point chaque vendredi en 5 minutes.", score: 2, react: "Marc serre la main. « Parfait. J'aime quand c'est carré. »" },
+          { text: "Euh, à 90%... ça dépend de plusieurs facteurs externes...", score: -2, react: "Marc : « 90% = tu n'es pas sûr. Reviens quand tu es sûr. »" },
+          { text: "Honnêtement on verra bien, le projet est passionnant !", score: -2, react: "Marc : « Passionnant ne paye pas les factures. »" },
+        ],
+      },
+      {
+        bot: "Dernière question : qui pilote ?",
+        options: [
+          { text: "Moi. Tu as un seul interlocuteur, c'est moi.", score: 2, react: "Marc : « Excellent. C'est validé. Vas-y. »" },
+          { text: "On va co-piloter avec Sophie et Hugo, à 4 mains.", score: 0, react: "Marc : « Trop de chefs. Tu pilotes, point. »" },
+          { text: "On verra à mesure qui prend le lead naturellement.", score: -2, react: "Marc : « Pas d'engagement = pas de validation. »" },
+        ],
+      },
+    ],
+  },
+  I: {
+    setting: "Tu retrouves Sophie (profil I), responsable marketing, en pause café. Elle sourit, t'attrape par l'épaule.",
+    turns: [
+      {
+        bot: "Ooooh trop bien de te voir ! Faut absolument que je te raconte le truc de la semaine dernière 😆 Mais tu voulais me parler aussi ?",
+        options: [
+          { text: "Bonjour, j'ai 3 sujets à traiter, premier sujet : le budget Q3.", score: -2, react: "Sophie : « Ah... ok... » (le sourire disparaît)" },
+          { text: "Carrément ! Raconte d'abord, après je te parle d'un projet qui va te plaire 😊", score: 2, react: "Sophie rit. « Trop bien ! Tu vas adorer mon histoire. »" },
+          { text: "Sophie, signe ce formulaire avant midi stp, c'est urgent.", score: -2, react: "Sophie soupire. « Tu pourrais au moins dire bonjour... »" },
+        ],
+      },
+      {
+        bot: "Bon alors, c'est quoi ton projet ? Vas-y, fais-moi rêver !",
+        options: [
+          { text: "On lance une campagne créative sur TikTok, et je veux que TU sois la voix du projet. C'est ton univers, ça va cartonner.", score: 2, react: "Sophie : « Wow, j'adore ! Raconte-moi tout, j'ai déjà 10 idées qui me viennent ! »" },
+          { text: "Voici un document de 24 pages avec la stratégie détaillée, la matrice de risque et le rétroplanning Gantt.", score: -2, react: "Sophie : « Euh... tu me le résumes en 30 secondes ? »" },
+          { text: "C'est un projet standard de communication, rien d'extraordinaire mais il faut le faire.", score: -2, react: "Sophie : « Ah... bof alors. Je suis pas trop motivée. »" },
+        ],
+      },
+      {
+        bot: "Mais j'aurais carte blanche ? Parce que j'ai mille idées hein !",
+        options: [
+          { text: "Cadre strict : tu suis le brief à la lettre, sans déviation.", score: -2, react: "Sophie se ferme. « Ah... ok... » (elle se désengage)" },
+          { text: "Carte blanche sur la créa, on cale juste 2-3 garde-fous ensemble pour que ça reste dans la cible.", score: 2, react: "Sophie : « Génial ! Et je peux proposer un format vidéo + influenceur ? J'ai un contact ! »" },
+          { text: "On en reparle plus tard, j'ai besoin que tu sois patiente.", score: -1, react: "Sophie : « Bon... ok mais je perds le momentum là... »" },
+        ],
+      },
+      {
+        bot: "Et qui va voir le résultat ? J'aimerais bien que ça se voie en interne !",
+        options: [
+          { text: "Comité de direction + intervention de toi en plénière à la rentrée. Tu portes le projet.", score: 2, react: "Sophie rayonne. « Trop bien !! Je vais me préparer un truc qui claque ! »" },
+          { text: "Personne ne le saura, ça reste confidentiel.", score: -2, react: "Sophie : « Ah... bof. Sans visibilité, je vais avoir du mal à m'investir. »" },
+          { text: "Tu verras bien selon les KPIs.", score: -1, react: "Sophie : « Mouais, c'est un peu flou. »" },
+        ],
+      },
+      {
+        bot: "Trop hâte ! On commence quand ?",
+        options: [
+          { text: "Lundi, on fait un kick-off fun avec l'équipe, croissants et brainstorming ouvert. Tu animes ?", score: 2, react: "Sophie tape dans ses mains. « Yes ! Je m'occupe de tout, ça va être génial ! »" },
+          { text: "On démarre par 3 semaines de cadrage rédactionnel et de validation comité.", score: -2, react: "Sophie : « 3 semaines de paperasse... ok... »" },
+          { text: "Quand tu veux, je m'en occupe pas vraiment.", score: -1, react: "Sophie : « Tu te détaches déjà ? Bof... »" },
+        ],
+      },
+    ],
+  },
+  S: {
+    setting: "Tu rejoins Hugo (profil S), chef de projet senior dans ton équipe depuis 8 ans, dans une petite salle calme. Il te sourit doucement.",
+    turns: [
+      {
+        bot: "Bonjour, content de te voir. Tu m'as dit que c'était important ?",
+        options: [
+          { text: "Salut Hugo, oui — mais d'abord, tu as le temps là ? Sinon on peut décaler.", score: 2, react: "Hugo sourit. « C'est gentil de demander. Vas-y, j'ai bien 30 minutes. »" },
+          { text: "Hugo, on n'a pas le temps de papoter, j'ai un truc gros à t'annoncer.", score: -2, react: "Hugo se tend légèrement. « Ah... d'accord... »" },
+          { text: "Hugo, c'est une opportunité monumentale, fais-moi confiance, fonce !", score: -2, react: "Hugo se referme. « Attends, attends, c'est quoi ? »" },
+        ],
+      },
+      {
+        bot: "Je t'écoute, tu peux y aller.",
+        options: [
+          { text: "L'équipe va être réorganisée. Je voudrais d'abord avoir ton ressenti et voir comment on accompagne ça ensemble, sereinement.", score: 2, react: "Hugo : « Merci de me prévenir tôt, ça compte pour moi. Raconte. »" },
+          { text: "L'équipe va être réorganisée. C'est acté, c'est lundi.", score: -2, react: "Hugo, voix tendue : « Ah... ok. Je découvre. »" },
+          { text: "L'équipe va exploser ! Nouveau monde, nouveau départ, super excitant !", score: -2, react: "Hugo : « Je ne sais pas si c'est si excitant que ça pour moi... »" },
+        ],
+      },
+      {
+        bot: "Ça veut dire quoi pour moi concrètement ? Je vais perdre mes coéquipiers ?",
+        options: [
+          { text: "Tu gardes 80% de ton équipe actuelle, tu accueilles 2 personnes que tu connais déjà, et on prend 4 semaines de transition.", score: 2, react: "Hugo respire. « Ok, ça me rassure. On va y arriver. »" },
+          { text: "Tu verras à l'usage, on s'adaptera.", score: -2, react: "Hugo, anxieux : « C'est très flou ce que tu me dis... »" },
+          { text: "C'est pas important, l'essentiel c'est l'objectif business.", score: -2, react: "Hugo, blessé : « Pour moi si, c'est important. »" },
+        ],
+      },
+      {
+        bot: "Et si certains de mes collègues ne sont pas d'accord ?",
+        options: [
+          { text: "On organise un échange collectif jeudi prochain, chacun pourra s'exprimer, et toi tu seras un relai privilégié.", score: 2, react: "Hugo : « C'est exactement ce qu'il faut. Merci. »" },
+          { text: "Tant pis, ils s'adapteront ou ils partiront.", score: -2, react: "Hugo, choqué : « Mais on ne peut pas dire ça... »" },
+          { text: "On les recadrera s'il y a des résistances.", score: -2, react: "Hugo : « Je préfère qu'on les écoute, pas qu'on les recadre. »" },
+        ],
+      },
+      {
+        bot: "Bon, je vais y réfléchir. Tu me laisses quelques jours ?",
+        options: [
+          { text: "Bien sûr, prends le temps. On en reparle quand tu veux, sans pression.", score: 2, react: "Hugo sourit franchement. « Merci. Je te reviens jeudi. »" },
+          { text: "J'ai besoin d'une réponse demain matin sinon je passe à autre chose.", score: -2, react: "Hugo : « Avec cette pression, ça va être difficile... »" },
+          { text: "Non, décide maintenant.", score: -2, react: "Hugo se fige et n'ose plus parler." },
+        ],
+      },
+    ],
+  },
+  C: {
+    setting: "Tu présentes une proposition à Claire (profil C), CFO. Elle est devant son écran, lunettes sur le nez, à lire le document que tu lui as envoyé hier.",
+    turns: [
+      {
+        bot: "Bonjour. J'ai parcouru votre note. Avant de commencer, sur quelle hypothèse repose le scénario central ?",
+        options: [
+          { text: "Hypothèse centrale : croissance du marché à 4,2% par an (source INSEE 2025), part de marché stable à 12%. Voici la fiche.", score: 2, react: "Claire hoche la tête. « Bien. Source citée, c'est rigoureux. »" },
+          { text: "On est plutôt optimistes, je le sens bien sur ce marché.", score: -2, react: "Claire lève un sourcil. « Le 'sentiment' n'est pas une hypothèse de modèle. »" },
+          { text: "On a regardé en gros, ça devrait passer.", score: -2, react: "Claire pose ses lunettes. « 'En gros' n'est pas suffisant ici. »" },
+        ],
+      },
+      {
+        bot: "Quelle est la sensibilité du résultat à une variation de -10% du chiffre d'affaires ?",
+        options: [
+          { text: "À -10% de CA, la marge passe de 18% à 11%, le point mort recule de 4 mois. Tableau de sensibilité page 7.", score: 2, react: "Claire : « Parfait, c'est exactement ce que je voulais voir. »" },
+          { text: "On n'a pas calculé, mais ça devrait aller.", score: -2, react: "Claire : « Pas calculé ? Comment voulez-vous que je valide ? »" },
+          { text: "Ça dépend, c'est compliqué à dire.", score: -1, react: "Claire : « Tout est calculable. Calculez-le et revenez. »" },
+        ],
+      },
+      {
+        bot: "Et la méthodologie de calcul du ROI, vous l'avez comparée à d'autres approches ?",
+        options: [
+          { text: "Oui : VAN, TRI et payback comparés. Le payback actualisé est l'indicateur retenu car il intègre le coût du capital. Annexe 3.", score: 2, react: "Claire sourit légèrement. « Très bien. C'est cohérent. »" },
+          { text: "On a pris la méthode la plus simple.", score: -1, react: "Claire : « La plus simple n'est pas toujours la plus juste. Justifiez. »" },
+          { text: "C'est la méthode que tout le monde utilise.", score: -2, react: "Claire : « Argument d'autorité. Je veux du raisonnement. »" },
+        ],
+      },
+      {
+        bot: "Je vois page 12 une approximation. Pourriez-vous m'expliquer ?",
+        options: [
+          { text: "Oui, c'est un arrondi à 5% près sur le coût logistique, lié à la fourchette du devis fournisseur. J'ai indiqué la borne haute et basse en note de bas de page.", score: 2, react: "Claire : « Très bien, vous avez documenté l'incertitude. »" },
+          { text: "Ah ça ? C'est une estimation rapide, on précisera plus tard.", score: -2, react: "Claire : « 'Plus tard' = pas maintenant = pas validé. »" },
+          { text: "Je ne sais pas, c'est mon équipe qui l'a fait.", score: -2, react: "Claire : « Vous présentez, vous devez maîtriser. »" },
+        ],
+      },
+      {
+        bot: "Bien. Je vais relire à tête reposée et vous reviens d'ici 48h avec mes éventuelles questions.",
+        options: [
+          { text: "Parfait. Je vous envoie en parallèle l'annexe technique mise à jour ce soir. À votre disposition pour toute question.", score: 2, react: "Claire : « Excellent. Je note. Travail soigné. »" },
+          { text: "On peut signer maintenant ? Pour gagner du temps.", score: -2, react: "Claire : « Hors de question avant ma relecture. »" },
+          { text: "Faites confiance à l'équipe, on s'en occupe.", score: -2, react: "Claire : « Mon travail n'est pas de faire confiance, c'est de vérifier. »" },
+        ],
+      },
+    ],
+  },
+};
+
+let chatProfile = null, chatTurn = 0, chatRapport = 50;
+
+function renderChat() {
+  const card = document.getElementById("chat-card");
+  if (!chatProfile) {
+    card.innerHTML = `
+      <h3>Choisis ton interlocuteur</h3>
+      <div class="grid" style="margin-top:1rem">
+        ${["D","I","S","C"].map(k => `
+          <div class="profile-card ${k}" style="cursor:pointer" data-c="${k}">
+            <span class="badge ${k}">${k}</span>
+            <h3>${profiles[k].name}</h3>
+            <p>${chatScenarios[k].setting.substring(0, 80)}...</p>
+          </div>
+        `).join("")}
+      </div>
+    `;
+    card.querySelectorAll(".profile-card").forEach(c => {
+      c.addEventListener("click", () => {
+        chatProfile = c.dataset.c;
+        chatTurn = 0;
+        chatRapport = 50;
+        renderChat();
+      });
+    });
+    return;
+  }
+
+  const scn = chatScenarios[chatProfile];
+  const turn = scn.turns[chatTurn];
+
+  if (!turn) {
+    const verdict = chatRapport >= 80 ? "Excellente connexion ! Tu as parfaitement adapté ton style." :
+                    chatRapport >= 60 ? "Bon rapport. Quelques choix sont à affiner mais tu es sur la bonne voie." :
+                    chatRapport >= 40 ? "Mitigé. Tu as dévié plusieurs fois du style attendu." :
+                    "Rapport rompu. Relis le module 1 sur ce profil et recommence.";
+    card.innerHTML = `
+      <h3>Conversation terminée</h3>
+      <p style="color:var(--text)">Niveau de rapport final : <strong>${chatRapport} / 100</strong></p>
+      <div class="progress"><div class="progress-bar" style="width:${Math.max(0, chatRapport)}%"></div></div>
+      <div class="feedback ${chatRapport >= 60 ? 'ok' : 'ko'}" style="margin-top:1rem"><strong>Bilan</strong>${verdict}</div>
+      <div class="actions">
+        <button onclick="chatProfile=null;renderChat()">Choisir un autre profil</button>
+        <button onclick="chatTurn=0;chatRapport=50;renderChat()">Rejouer ce profil</button>
+      </div>
+    `;
+    return;
+  }
+
+  card.innerHTML = `
+    <p style="color:var(--muted);font-size:.9rem">${chatTurn === 0 ? scn.setting : ''}</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <span><span class="badge ${chatProfile}">${chatProfile}</span> <strong>${profiles[chatProfile].name}</strong> · Tour ${chatTurn + 1} / ${scn.turns.length}</span>
+      <span>Rapport : <strong>${chatRapport}</strong> / 100</span>
+    </div>
+    <div class="progress" style="margin-bottom:1rem"><div class="progress-bar" style="width:${Math.max(0, chatRapport)}%"></div></div>
+    <div class="scenario-text" style="border-left-color:${profiles[chatProfile].color}">${profiles[chatProfile].name.charAt(0)}. — « ${turn.bot} »</div>
+    <p style="color:var(--text)"><strong>Ta réponse :</strong></p>
+    <div class="options">
+      ${turn.options.map((o, i) => `<button data-i="${i}">${o.text}</button>`).join("")}
+    </div>
+    <div id="chat-react"></div>
+  `;
+  card.querySelectorAll(".options button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const i = parseInt(btn.dataset.i);
+      const o = turn.options[i];
+      card.querySelectorAll(".options button").forEach(b => b.disabled = true);
+      const delta = o.score * 10;
+      chatRapport = Math.max(0, Math.min(100, chatRapport + delta));
+      btn.classList.add(o.score > 0 ? "correct" : o.score < 0 ? "wrong" : "");
+      addScore(o.score > 0);
+      document.getElementById("chat-react").innerHTML = `
+        <div class="feedback ${o.score > 0 ? 'ok' : o.score < 0 ? 'ko' : ''}">
+          <strong>Réaction (${delta > 0 ? "+" : ""}${delta} rapport)</strong>
+          ${o.react}
+        </div>
+        <div class="actions"><button onclick="chatTurn++;renderChat()">Continuer →</button></div>
+      `;
+    });
+  });
+}
+
+/* ============== MODULE 7 : ALLER PLUS LOIN ============== */
+
+const pcm = {
+  Empathique: { color: "#e91e63", needs: "Reconnaissance en tant que personne, sensoriel", canal: "Émotion, chaleur", strength: "Compassion, attention aux autres", stress: "Survalorise, doute de soi" },
+  Travaillomane: { color: "#3f51b5", needs: "Reconnaissance du travail, structure du temps", canal: "Information, logique", strength: "Logique, responsable, organisé", stress: "Sur-contrôle, attaque les autres sur leurs idées" },
+  Persévérant: { color: "#009688", needs: "Reconnaissance des opinions, des convictions", canal: "Information, opinions", strength: "Engagé, observateur, consciencieux", stress: "Croisade, perd la nuance" },
+  Rêveur: { color: "#9c27b0", needs: "Solitude, espace, temps de réflexion", canal: "Directif bienveillant", strength: "Imaginatif, calme, réfléchi", stress: "Se retire, devient passif" },
+  Rebelle: { color: "#ff9800", needs: "Contact ludique, fun", canal: "Émotion, jeu", strength: "Spontané, créatif, ludique", stress: "Blâme, ronchonne, sabote" },
+  Promoteur: { color: "#f44336", needs: "Excitation, action, défi", canal: "Directif", strength: "Adaptable, charmeur, persuasif", stress: "Manipule, prend des risques inutiles" },
+};
+
+function renderPCM() {
+  document.getElementById("pcm-grid").innerHTML = Object.entries(pcm).map(([name, p]) => `
+    <div class="profile-card" style="border-top-color:${p.color}">
+      <h3 style="color:${p.color}">${name}</h3>
+      <p><strong>Besoin :</strong> <span style="color:var(--text)">${p.needs}</span></p>
+      <p><strong>Canal :</strong> <span style="color:var(--text)">${p.canal}</span></p>
+      <p><strong>Force :</strong> <span style="color:var(--text)">${p.strength}</span></p>
+      <p><strong>Sous stress :</strong> <span style="color:var(--text)">${p.stress}</span></p>
+    </div>
+  `).join("");
+}
+
+const mbtiAxes = [
+  { letter: "E / I", title: "Extraversion / Introversion", desc: "Où l'énergie est puisée : monde extérieur (E) vs monde intérieur (I)." },
+  { letter: "S / N", title: "Sensation / iNtuition", desc: "Perception : faits concrets (S) vs idées et possibilités (N)." },
+  { letter: "T / F", title: "Thinking / Feeling", desc: "Décision : logique (T) vs valeurs et harmonie (F)." },
+  { letter: "J / P", title: "Judging / Perceiving", desc: "Style de vie : planifié (J) vs spontané (P)." },
+];
+
+const mbtiTypes = [
+  { code: "INTJ", nick: "L'Architecte", profile: "Stratégique, indépendant, vision long terme" },
+  { code: "INTP", nick: "Le Logicien", profile: "Analytique, curieux, théoricien" },
+  { code: "ENTJ", nick: "Le Commandant", profile: "Leader décidé, ambitieux, efficace" },
+  { code: "ENTP", nick: "L'Innovateur", profile: "Provocateur d'idées, débatteur, créatif" },
+  { code: "INFJ", nick: "L'Avocat", profile: "Idéaliste, perspicace, déterminé" },
+  { code: "INFP", nick: "Le Médiateur", profile: "Idéaliste, créatif, attaché aux valeurs" },
+  { code: "ENFJ", nick: "Le Protagoniste", profile: "Charismatique, inspirant, à l'écoute" },
+  { code: "ENFP", nick: "L'Inspirateur", profile: "Enthousiaste, imaginatif, sociable" },
+  { code: "ISTJ", nick: "Le Logisticien", profile: "Méthodique, fiable, factuel" },
+  { code: "ISFJ", nick: "Le Défenseur", profile: "Dévoué, attentionné, fidèle" },
+  { code: "ESTJ", nick: "Le Directeur", profile: "Organisé, traditionnel, gestionnaire" },
+  { code: "ESFJ", nick: "Le Consul", profile: "Sociable, attentionné, sens du devoir" },
+  { code: "ISTP", nick: "Le Virtuose", profile: "Pragmatique, audacieux, bricoleur" },
+  { code: "ISFP", nick: "L'Aventurier", profile: "Sensible, artiste, dans l'instant" },
+  { code: "ESTP", nick: "L'Entrepreneur", profile: "Énergique, perspicace, opportuniste" },
+  { code: "ESFP", nick: "L'Amuseur", profile: "Spontané, sociable, dans l'action" },
+];
+
+function renderMBTI() {
+  document.getElementById("mbti-axes").innerHTML = mbtiAxes.map(a => `
+    <div class="profile-card" style="border-top-color:var(--c)">
+      <span class="badge" style="background:var(--c);color:white">${a.letter}</span>
+      <h3>${a.title}</h3>
+      <p>${a.desc}</p>
+    </div>
+  `).join("");
+  document.getElementById("mbti-types").innerHTML = `
+    <h3 style="margin-top:1.5rem">Les 16 types en un coup d'œil</h3>
+    <div class="grid">
+      ${mbtiTypes.map(t => `
+        <div style="background:var(--soft);padding:.8rem;border-radius:8px">
+          <strong style="font-family:monospace;color:var(--c)">${t.code}</strong>
+          <strong style="display:block">${t.nick}</strong>
+          <span style="color:var(--muted);font-size:.9rem">${t.profile}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+const crossMap = [
+  { disc: "D", pcm: "Promoteur", mbti: "ESTJ / ENTJ", traits: "Action, défi, contrôle, résultat" },
+  { disc: "I", pcm: "Rebelle / Empathique", mbti: "ENFP / ESFP", traits: "Émotion, relation, créativité" },
+  { disc: "S", pcm: "Empathique / Rêveur", mbti: "ISFJ / INFP", traits: "Harmonie, stabilité, écoute" },
+  { disc: "C", pcm: "Travaillomane / Persévérant", mbti: "INTJ / ISTJ", traits: "Logique, rigueur, méthode" },
+];
+
+function renderCross() {
+  document.getElementById("cross-table").innerHTML = `
+    <table style="width:100%;border-collapse:collapse;margin-top:1rem">
+      <thead>
+        <tr style="background:var(--soft)">
+          <th style="padding:.8rem;text-align:left">DISC</th>
+          <th style="padding:.8rem;text-align:left">PCM</th>
+          <th style="padding:.8rem;text-align:left">MBTI (typiques)</th>
+          <th style="padding:.8rem;text-align:left">Traits communs</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${crossMap.map(r => `
+          <tr style="border-bottom:1px solid var(--soft)">
+            <td style="padding:.8rem"><span class="badge ${r.disc}">${r.disc}</span> ${profiles[r.disc].name}</td>
+            <td style="padding:.8rem;color:var(--text)">${r.pcm}</td>
+            <td style="padding:.8rem;color:var(--text);font-family:monospace">${r.mbti}</td>
+            <td style="padding:.8rem;color:var(--muted)">${r.traits}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+    <p style="margin-top:1rem;font-size:.9rem"><em>Note : ces correspondances sont indicatives. Chaque modèle a sa logique propre — utilise-les comme ponts, pas comme équivalences strictes.</em></p>
+  `;
+}
+
 /* ============== NAV & SCORE ============== */
 
 let scoreCount = 0, totalCount = 0;
@@ -754,6 +1266,11 @@ document.querySelectorAll("nav button[data-mod]").forEach(btn => {
 renderRec();
 renderInt();
 renderPra();
+renderSelf();
+renderChat();
+renderPCM();
+renderMBTI();
+renderCross();
 </script>
 
 </body>
